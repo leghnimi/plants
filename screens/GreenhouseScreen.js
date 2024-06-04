@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
 import GreenhouseCard from "../components/GreenhouseCard";
+
+
 export default function GreenhouseScreen() {
     const [plants, setPlants] = useState([]);
 
@@ -31,6 +33,7 @@ export default function GreenhouseScreen() {
                         imageSource={plant.plantPicture}
                         title={plant.plantName}
                         location={plant.description}
+                        numberOfPlants={12}
                     />
                 ))}
             </ScrollView>
@@ -41,7 +44,7 @@ export default function GreenhouseScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 50,
+        marginTop: 10,
         marginBottom: 50,
     },
 

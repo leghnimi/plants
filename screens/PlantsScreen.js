@@ -4,23 +4,28 @@ import { Text, View, StyleSheet, Pressable, ImageBackground, TextInput, ScrollVi
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import ModalUniversal from '../components/ModalUniversal';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Octicons from 'react-native-vector-icons/Octicons';
 import * as ImagePicker from 'expo-image-picker';
 import ImageViewer from '../components/ImageViewer';
 import PlantCard from '../components/PlantCard';
-
-
+import { Picker } from '@react-native-picker/picker';
 
 export default function PlantsScreen() {
   const [visibility, setVisibility] = useState(false);
+  const [visibitlityGreenhouse, setVisibilityGreenhouse] = useState(false);
   const [plantName, setPlantName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingGreenhouse, setIsLoadingGreenhouse] = useState(false);
+  const [greenhouseName, setGreenhouseName] = useState('');
+  const [numberOfPlants, setNumberOfPlants] = useState('');
+  const [greenhouseLocation, setGreenhouseLocation] = useState('');
+  const [plantsInGreenhouse, setPlantsInGreenhouse] = useState('');
   const [plants, setPlants] = useState([]);
-
-  console.log(process.env.REACT_APP_API_ENDPOINT);  
 
 
   useEffect(() => {
@@ -43,8 +48,11 @@ export default function PlantsScreen() {
     }
   };
 
-  const handleModal = () => {
+  const handleModalPlant = () => {
     setVisibility(true);
+  }
+  const handleModalGreenhouse = () => {
+    setVisibilityGreenhouse(true);
   }
 
   const addPicture = async () => {
@@ -66,7 +74,6 @@ export default function PlantsScreen() {
 
 
     if (!result.canceled) {
-      // Set the selected image URI in the state
       setSelectedImage(result.assets[0].uri);
 
     }
@@ -115,18 +122,65 @@ export default function PlantsScreen() {
     }
   };
 
+  const addGreenhouse = async () => {
+    setIsLoadingGreenhouse(true);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/add-greenhouse`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          greenhouseName: greenhouseName,
+          location: greenhouseLocation,
+          numberOfPlants: numberOfPlants,
+          plantType: plantsInGreenhouse,
+        }),
+      });
+  
+      if (response.ok) {
+        alert('serre ajoutée avec succès');
+        setGreenhouseName('');
+        setGreenhouseLocation('');
+        setNumberOfPlants('');
+        setPlantsInGreenhouse('');
+        setIsLoadingGreenhouse(false);
+        setVisibilityGreenhouse(false);
+      } else {
+        setIsLoadingGreenhouse(false);
+        console.error('une erreur est survenue lors de l\'ajout de la serre');
+      }
+    } catch (err) {
+      setIsLoadingGreenhouse(false);
+      alert('une erreur est survenue lors de l\'ajout de la serre: ', err.message);
+      console.error(err);
+    }
+  };
+
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../assets/plantsBackground.png')} style={{ width: '100%', height: '100%' }}>
-        <ScrollView contentContainerStyle={{justifyContent:'center', alignItems:'center', gap:20}}>
+      <ImageBackground source={require('../assets/plantsBackground.png')} style={{
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        {/* <ScrollView contentContainerStyle={{justifyContent:'center', alignItems:'center', gap:20}}>
           {plants.map((plant) => <PlantCard key={plant._id} imageSource={plant.plantPicture} title={plant.plantName} description={plant.description} />)}
-        </ScrollView>
+        </ScrollView> */}
 
         <View style={styles.addPlantButton}>
-          <Pressable style={styles.addPlant} onPress={handleModal}>
-            <FontAwesome6 name="plus" size={30} color="#000" />
-            <Text style={{ fontSize: 20 }}>Ajouter</Text>
+          <Pressable style={styles.addPlant} onPress={handleModalPlant}>
+            <FontAwesome6 name="plus" size={15} color="#000" />
+            <Text style={{ fontSize: 18 }}>Ajouter Plante</Text>
+          </Pressable>
+        </View>
+        <View style={styles.addPlantButton}>
+          <Pressable style={styles.addPlant} onPress={handleModalGreenhouse}>
+            <FontAwesome6 name="plus" size={15} color="#000" />
+            <Text style={{ fontSize: 18 }}>Ajouter Serre</Text>
           </Pressable>
         </View>
         <ModalUniversal isVisible={visibility} height={"80%"}>
@@ -186,6 +240,68 @@ export default function PlantsScreen() {
             </Pressable>
           </View>
         </ModalUniversal>
+        <ModalUniversal isVisible={visibitlityGreenhouse} height={"50%"}>
+          <AntDesign
+            name="closecircle"
+            size={30}
+            color="orange"
+            onPress={() => {
+              setVisibilityGreenhouse(false);
+            }}
+            style={{ position: 'absolute', top: 10, right: 15 }} />
+          <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Ajouter une serre</Text>
+          <View style={styles.inputContainer}>
+            <FontAwesome6 name="pencil" size={20} color="#000" />
+            <TextInput
+              style={styles.input}
+              onChangeText={setGreenhouseName}
+              value={greenhouseName}
+              placeholder="Nom de la serre"
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <MaterialCommunityIcons name="greenhouse" size={20} color="#000" />
+            <TextInput
+              style={styles.input}
+              onChangeText={setGreenhouseLocation}
+              value={greenhouseLocation}
+              placeholder="Emplacement de la serre"
+            />
+          </View>
+          <View style={styles.pickerContainer}>
+            <FontAwesome6 name="plant-wilt" size={20} color="#000" />
+            <Picker
+              selectedValue={plantsInGreenhouse}
+              onValueChange={(itemValue) => setPlantsInGreenhouse(itemValue)}
+              style={styles.picker}
+            >
+              {plants.map((plant, index) => (
+                <Picker.Item key={index} label={plant.plantName} value={plant.plantName} />
+              ))}
+            </Picker>
+          </View>
+          
+          <View style={styles.inputContainer}>
+            <Octicons name="number" size={20} color="#000" />
+            <TextInput
+              style={styles.input}
+              keyboardType='numeric'
+              onChangeText={setNumberOfPlants}
+              value={numberOfPlants}
+              placeholder="nombre de plantes dans la serre"
+            />
+          </View>
+          <View style={styles.addPlantButton}>
+            <Pressable style={styles.addPlant} onPress={addGreenhouse}>
+              {isLoadingGreenhouse ? (
+                <ActivityIndicator size="small" color="#0000ff" />
+              ) : (
+                <Text style={{ fontSize: 16 }}>Ajouter</Text>
+              )}
+            </Pressable>
+          </View>
+
+        </ModalUniversal>
       </ImageBackground>
       <StatusBar style="auto" />
     </View>
@@ -196,7 +312,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    marginTop: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   addPlant: {
     flexDirection: 'row-reverse',
@@ -205,7 +322,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   addPlantButton: {
-
+    marginTop: 10,
     width: '45%',
     backgroundColor: 'orange',
     borderRadius: 45,
@@ -214,6 +331,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
+    gap: 10
   },
   inputContainer: {
     flexDirection: 'row',
@@ -223,6 +341,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'lightgrey',
     borderBottomWidth: 1,
     gap: 10,
+    marginBottom: 10,
   },
   input: {
     flex: 1,
@@ -269,6 +388,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
+  },
+  pickerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    padding: 10,
+    marginTop: 10,
+  },
+  picker: {
+    flex: 1,
   },
 
 });

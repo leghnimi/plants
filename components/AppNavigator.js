@@ -17,7 +17,7 @@ export default function AppNavigator() {
           component={HomeScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="Plants" component={PlantsScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Plants" component={PlantsScreen} options={{ headerShown: true, title:'Gestion Serres' }} />
         <Stack.Screen
           name="LoginScreen"
           component={LoginScreen}
@@ -31,7 +31,7 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Greenhouse"
           component={GreenhouseScreen}
-          options={{ headerShown: false }}
+          options={{ headerShown: true, title: "Serres"}}
         />
       </Stack.Navigator>
     </NavigationContainer>

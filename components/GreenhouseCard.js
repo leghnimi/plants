@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 
-const PlantCard = ({ imageSource, title, location, onPress }) => (
+const PlantCard = ({ imageSource, title, location, onPress, numberOfPlants }) => (
     <TouchableOpacity onPress={onPress} style={styles.card}>
         <Image source={{ uri: imageSource }} style={styles.cardImage} />
         <View style={styles.CardContentContainer}>
@@ -10,7 +10,7 @@ const PlantCard = ({ imageSource, title, location, onPress }) => (
                 <Text style={styles.cardDescription} numberOfLines={1}>{location}</Text>
             </View>
             <View style={styles.plantsContainer}>
-            <Text style={{color:'green'}}>12 Plants</Text>
+            <Text style={{color:'green'}}>{numberOfPlants} plantes</Text>
             </View>
         </View>
     </TouchableOpacity>
