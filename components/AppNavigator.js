@@ -3,8 +3,11 @@ import PlantsScreen from "../screens/PlantsScreen";
 import LoginScreen from "../screens/LoginScreen";
 import SignupScreen from "../screens/SignupScreen";
 import GreenhouseScreen from "../screens/GreenhouseScreen";
+import GreenhouseDetails from "../screens/GreenhouseDetails";
+import WorkerInputScreen from "../screens/WorkerInputScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+
 
 export default function AppNavigator() {
   const Stack = createStackNavigator();
@@ -32,6 +35,16 @@ export default function AppNavigator() {
           name="Greenhouse"
           component={GreenhouseScreen}
           options={{ headerShown: true, title: "Serres"}}
+        />
+        <Stack.Screen
+          name="GreenhouseDetails"
+          component={GreenhouseDetails}
+          options={{ headerShown: true, title: "Détails Serre"}}
+        />
+        <Stack.Screen
+          name="WorkerInput"
+          component={WorkerInputScreen}
+          options={{ headerShown: true, title: "Saisie des données"}}
         />
       </Stack.Navigator>
     </NavigationContainer>

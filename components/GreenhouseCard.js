@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 
-const PlantCard = ({ imageSource, title, location, onPress, numberOfPlants }) => (
+const GreenhouseCard = ({  title, location, onPress, numberOfPlants }) => (
     <TouchableOpacity onPress={onPress} style={styles.card}>
-        <Image source={{ uri: imageSource }} style={styles.cardImage} />
+        <Image source={require('../assets/greenhouseBackground.jpg')} style={styles.cardImage} />
         <View style={styles.CardContentContainer}>
             <View style={styles.cardContent}>
                 <Text style={styles.cardTitle}>{title}</Text>
@@ -66,4 +66,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PlantCard;
+export default GreenhouseCard;

@@ -23,8 +23,8 @@ router.post('/upload', upload.single('image'), async (req, res) => {
     res.status(200).json({ message: 'Plant added successfully' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Error uploading plant' });
-  }
+    res.status(500).json({ message: 'Error uploading plant', error: err.message });
+}
 });
 
 module.exports = router;

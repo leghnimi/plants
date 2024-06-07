@@ -47,7 +47,7 @@ export default function LoginScreen() {
         //     console.log(err);
         //     alert('Une erreur est survenue');
         // }
-        navigation.navigate('Plants')
+        navigation.navigate('Greenhouse')
     }
     return (
         <View style={styles.container}>

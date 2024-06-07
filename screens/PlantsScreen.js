@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, StyleSheet, Pressable, ImageBackground, TextInput, ScrollView, ActivityIndicator } from 'react-native';
+import { Text, View, StyleSheet, Pressable, ImageBackground, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -10,7 +10,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Octicons from 'react-native-vector-icons/Octicons';
 import * as ImagePicker from 'expo-image-picker';
 import ImageViewer from '../components/ImageViewer';
-import PlantCard from '../components/PlantCard';
 import { Picker } from '@react-native-picker/picker';
 
 export default function PlantsScreen() {
@@ -26,6 +25,45 @@ export default function PlantsScreen() {
   const [greenhouseLocation, setGreenhouseLocation] = useState('');
   const [plantsInGreenhouse, setPlantsInGreenhouse] = useState('');
   const [plants, setPlants] = useState([]);
+  const [coordinates, setCoordinates] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
+  const [locationInput, setLocationInput] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [data, setData] = useState(null);
+
+  const handleLocationInput = (text) => {
+    setLocationInput(text);
+  };
+
+  const handleSearch = async () => {
+    try {
+      const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${locationInput}`);
+      const responseData = await response.json();
+      setData(responseData);
+      if (responseData && responseData.results) {
+        setSuggestions(responseData.results.map(result => `${result.admin1}, ${result.country}`));
+      } else {
+        setSuggestions([]);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleLocationSelect = (location) => {
+    const selectedResult = data.results.find((result) => `${result.admin1}, ${result.country}` === location);
+    if (selectedResult) {
+      setCoordinates({
+        latitude: selectedResult.latitude,
+        longitude: selectedResult.longitude,
+      });
+    }
+    setGreenhouseLocation(location);
+    setLocationInput(location);
+    setSuggestions([]);
+  };
 
 
   useEffect(() => {
@@ -97,7 +135,6 @@ export default function PlantsScreen() {
         method: 'POST',
         body: formData,
       });
-
       if (response.ok) {
         alert('Plant added successfully');
         // reset form fields
@@ -107,9 +144,11 @@ export default function PlantsScreen() {
         fetchPlants();
         setIsLoading(false);
       } else {
-        console.error('Error uploading plant');
+        setIsLoading(false);
+        console.error('erreur ajout plante');
       }
     } catch (err) {
+      setIsLoading(false);
       console.error(err);
     }
   };
@@ -132,12 +171,13 @@ export default function PlantsScreen() {
         },
         body: JSON.stringify({
           greenhouseName: greenhouseName,
-          location: greenhouseLocation,
+          location: coordinates,
           numberOfPlants: numberOfPlants,
           plantType: plantsInGreenhouse,
+          city: greenhouseLocation,
         }),
       });
-  
+      console.log('response', response);
       if (response.ok) {
         alert('serre ajoutée avec succès');
         setGreenhouseName('');
@@ -147,6 +187,9 @@ export default function PlantsScreen() {
         setIsLoadingGreenhouse(false);
         setVisibilityGreenhouse(false);
       } else {
+        setIsLoadingGreenhouse(false);
+        const responseBody = await response.json();
+        console.error('Server responded with status 500', responseBody);
         setIsLoadingGreenhouse(false);
         console.error('une erreur est survenue lors de l\'ajout de la serre');
       }
@@ -167,10 +210,6 @@ export default function PlantsScreen() {
         justifyContent: 'center',
         alignItems: 'center',
       }}>
-        {/* <ScrollView contentContainerStyle={{justifyContent:'center', alignItems:'center', gap:20}}>
-          {plants.map((plant) => <PlantCard key={plant._id} imageSource={plant.plantPicture} title={plant.plantName} description={plant.description} />)}
-        </ScrollView> */}
-
         <View style={styles.addPlantButton}>
           <Pressable style={styles.addPlant} onPress={handleModalPlant}>
             <FontAwesome6 name="plus" size={15} color="#000" />
@@ -263,11 +302,27 @@ export default function PlantsScreen() {
             <MaterialCommunityIcons name="greenhouse" size={20} color="#000" />
             <TextInput
               style={styles.input}
-              onChangeText={setGreenhouseLocation}
-              value={greenhouseLocation}
+              onChangeText={handleLocationInput}
+              value={locationInput}
               placeholder="Emplacement de la serre"
             />
+            <TouchableOpacity onPress={handleSearch}>
+              <MaterialCommunityIcons name="search-web" size={24} color="#000" />
+            </TouchableOpacity>
           </View>
+          {suggestions.length > 0 && (
+            <View style={styles.suggestionsContainer}>
+              {suggestions?.map((suggestion, index) => (
+                <Pressable
+                  key={index}
+                  style={styles.suggestionItem}
+                  onPress={() => handleLocationSelect(suggestion)}
+                >
+                  <Text>{suggestion}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
           <View style={styles.pickerContainer}>
             <FontAwesome6 name="plant-wilt" size={20} color="#000" />
             <Picker
@@ -280,7 +335,7 @@ export default function PlantsScreen() {
               ))}
             </Picker>
           </View>
-          
+
           <View style={styles.inputContainer}>
             <Octicons name="number" size={20} color="#000" />
             <TextInput
@@ -398,6 +453,15 @@ const styles = StyleSheet.create({
   },
   picker: {
     flex: 1,
+  },
+  suggestionsContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    padding: 10,
+    marginVertical: 10,
+  },
+  suggestionItem: {
+    padding: 10,
   },
 
 });

@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
-        width: '90%',
+        width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
     },

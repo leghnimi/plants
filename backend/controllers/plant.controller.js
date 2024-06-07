@@ -8,4 +8,15 @@ const getPlants = async (req, res) => {
     }
 }
 
-module.exports = { getPlants };
+const getPlantByName = async (req, res) => {
+    const { plantName } = req.params;
+    try {
+        const plant = await Plant.findOne({ plantName });
+        res.status(200).json(plant);
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
+module.exports = { getPlants, getPlantByName };

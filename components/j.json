@@ -1,0 +1,41 @@
+{
+    "_id": "6660c7e90ff60350a955982e",
+    "greenhouseName": "gafsa",
+    "plantType": "concombre",
+    "location": {
+        "latitude": 34.425,
+        "longitude": 8.78417,
+        "_id": "6660c7e90ff60350a955982f"
+    },
+    "city": "Gafsa, Tunisia",
+    "numberOfPlants": 549497,
+    "createdAt": "2024-06-05T20:17:45.604Z",
+    "updatedAt": "2024-06-05T23:18:43.405Z",
+    "__v": 13,
+    "sensors": [
+        {
+            "date": "2026-12-14T23:00:00.000Z",
+            "data": [
+                {
+                    "time": "22:06",
+                    "temperature": 22,
+                    "humidity": 50,
+                    "light": 500,
+                    "soilMoisture": 78,
+                    "soilTemp": 17,
+                    "_id": "6660f24fdd27c8ca1bd194dc"
+                },
+                {
+                    "time": "22:05",
+                    "temperature": 22,
+                    "humidity": 50,
+                    "light": 500,
+                    "soilMoisture": 78,
+                    "soilTemp": 17,
+                    "_id": "6660f253dd27c8ca1bd194e1"
+                }
+            ],
+            "_id": "6660f24fdd27c8ca1bd194db"
+        }
+    ]
+}

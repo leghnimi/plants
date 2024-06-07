@@ -1,39 +1,41 @@
-import React, {useEffect, useState} from 'react';
-import { View, ScrollView, StyleSheet } from "react-native";
+import React, { useEffect, useState } from 'react';
+import { View, ScrollView, StyleSheet, Text } from "react-native";
 import GreenhouseCard from "../components/GreenhouseCard";
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function GreenhouseScreen() {
-    const [plants, setPlants] = useState([]);
-
-
+    const [greenhouses, setGreenhouses] = useState([]);
+    const navigation = useNavigation();
 
     useEffect(() => {
-        fetchPlants();
-      }, []);
+        const fetchGreenhouses = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/greenhouses`);
+                const data = await response.json();
+                setGreenhouses(data);
+            } catch (err) {
+                console.error(err);
+            }
+        };
 
-    const fetchPlants = async () => {
-        try {
-          const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/plants`);
-          const data = await response.json();
-          setPlants(data);
-        } catch (err) {
-          console.error(err);
-        }
-      };
- 
+        fetchGreenhouses();
+    }, []);
 
 
+    const handleGreenhousePress = (id) => {
+        navigation.navigate('GreenhouseDetails', { id });
+    };
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={{justifyContent:'center', alignItems:'center', gap:20}}>
-                {plants.map((plant, index) => (
+                {greenhouses.map((greenhouse) => (
                     <GreenhouseCard
-                        key={index}
-                        imageSource={plant.plantPicture}
-                        title={plant.plantName}
-                        location={plant.description}
-                        numberOfPlants={12}
+                        key={greenhouse._id}
+                        title={greenhouse.greenhouseName}
+                        location={greenhouse.city}
+                        numberOfPlants={greenhouse.numberOfPlants}
+                        onPress={() => handleGreenhousePress(greenhouse._id)}
                     />
                 ))}
             </ScrollView>
