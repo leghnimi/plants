@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react"
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native"
+import { View, StyleSheet, TouchableOpacity, Text, TextInput, ScrollView, Pressable, ActivityIndicator } from "react-native"
 import { Picker } from "@react-native-picker/picker";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Slider from '@react-native-community/slider';
+
 
 export default function WorkerInputScreen() {
     const [greenhouses, setGreenhouses] = useState([]);
@@ -11,9 +13,19 @@ export default function WorkerInputScreen() {
     const [time, setTime] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
+    const [temperature, setTemperature] = useState(0);
+    const [temperatureInput, setTemperatureInput] = useState('');
+    const [humidity, setHumidity] = useState(0);
+    const [humidityInput, setHumidityInput] = useState('');
+    const [soilTemp, setSoilTemp] = useState(0);
+    const [soilTempInput, setSoilTempInput] = useState('');
+    const [soilMoisture, setSoilMoisture] = useState(0);
+    const [soilMoistureInput, setSoilMoistureInput] = useState('');
+    const [light, setLight] = useState(0);
+    const [lightInput, setLightInput] = useState('');
+    const [note, setNote] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    console.log('date is', date.toLocaleDateString('fr-FR', { year: 'numeric', month: '2-digit', day: '2-digit' }));
-    console.log('time is', time.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }));
 
     useEffect(() => {
         const fetchGreenhouses = async () => {
@@ -34,59 +46,287 @@ export default function WorkerInputScreen() {
         setShowDatePicker(false);
         setDate(currentDate);
     };
-    
+
     const onTimeChange = (event, selectedTime) => {
         const currentTime = selectedTime || time;
         setShowTimePicker(false);
         setTime(currentTime);
     };
 
+
+    const handleUploadSensorData = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/greenhouse/${selectedGreenhouse}/sensor-data`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    date,
+                    time,
+                    temperature,
+                    humidity,
+                    soilTemp,
+                    soilMoisture,
+                    light,
+                    note
+                })
+            });
+
+            if (response.ok) {
+                alert('Données ajoutées avec succès');
+                setTemperature(0);
+                setTemperatureInput('');
+                setHumidity(0);
+                setHumidityInput('');
+                setSoilTemp(0);
+                setSoilTempInput('');
+                setSoilMoisture(0);
+                setSoilMoistureInput('');
+                setLight(0);
+                setLightInput('');
+                setNote('');
+                setLoading(false);
+            } else {
+                setLoading(false);
+                const errorData = await response.json();
+                console.log(errorData);
+                alert(`Erreur: ${errorData.message}`);
+            }
+        } catch (err) {
+            setLoading(false);
+            console.error(err);
+            alert('Une erreur est survenue');
+        }
+    }
+
+
     return (
         <View style={styles.container}>
-        <View style={styles.datePicker}>
-            {showDatePicker && (
-                <DateTimePicker
-                    testID="datePicker"
-                    value={date}
-                    mode={'date'}
-                    display="default"
-                    onChange={onDateChange}
-                />
-            )}
-            <TouchableOpacity style={styles.button} onPress={() => setShowDatePicker(true)}>
-                <Text style={styles.buttonText}>Choisir date</Text>
-            </TouchableOpacity>
-        </View>
-        <View style={styles.datePicker}>
-            {showTimePicker && (
-                <DateTimePicker
-                    testID="timePicker"
-                    value={time}
-                    mode={'time'}
-                    is24Hour={true}
-                    display="default"
-                    onChange={onTimeChange}
-                />
-            )}
-            <TouchableOpacity style={styles.button} onPress={() => setShowTimePicker(true)}>
-                <Text style={styles.buttonText}>choisir temps</Text>
-            </TouchableOpacity>
-        </View>
-            <View style={styles.inputContainer}>
-                <Text style={{fontSize:14}}>Veillez choisir la seree ci dessous</Text>
-                <View style={styles.pickerContainer}>
-                    <MaterialCommunityIcons name="greenhouse" size={20} color="#000" />
-                    <Picker
-                        selectedValue={selectedGreenhouse}
-                        onValueChange={(itemValue) => setSelectedGreenhouse(itemValue)}
-                        style={styles.picker}
-                    >
-                        {greenhouses.map((greenhouse, index) => (
-                            <Picker.Item key={index} label={greenhouse.greenhouseName} value={greenhouse.greenhouseName} />
-                        ))}
-                    </Picker>
+            <ScrollView>
+
+                <View style={styles.inputContainer}>
+                    <Text style={styles.sensorsText}>Veillez choisir la seree ci dessous</Text>
+                    <View style={styles.pickerContainer}>
+                        <MaterialCommunityIcons name="greenhouse" size={20} color="#000" />
+                        <Picker
+                            selectedValue={selectedGreenhouse}
+                            onValueChange={(itemValue) => setSelectedGreenhouse(itemValue)}
+                            style={styles.picker}
+                        >
+                            {greenhouses.map((greenhouse, index) => (
+                                <Picker.Item key={index} label={greenhouse.greenhouseName} value={greenhouse.greenhouseName} />
+                            ))}
+                        </Picker>
+                    </View>
                 </View>
-            </View>
+                <View style={styles.dateAndTimeContainer}>
+                    <View style={styles.datePicker}>
+                        {showDatePicker && (
+                            <DateTimePicker
+                                testID="datePicker"
+                                value={date}
+                                mode={'date'}
+                                display="default"
+                                onChange={onDateChange}
+                            />
+                        )}
+                        <TouchableOpacity style={styles.button} onPress={() => setShowDatePicker(true)}>
+                            <Text style={styles.buttonText}>Choisir date</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.dateAndTimeText}>date : {date.toLocaleDateString()}</Text>
+                    </View>
+                    <View style={styles.datePicker}>
+                        {showTimePicker && (
+                            <DateTimePicker
+                                testID="timePicker"
+                                value={time}
+                                mode={'time'}
+                                is24Hour={true}
+                                display="default"
+                                onChange={onTimeChange}
+                            />
+                        )}
+                        <TouchableOpacity style={styles.button} onPress={() => setShowTimePicker(true)}>
+                            <Text style={styles.buttonText}>choisir temps</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.dateAndTimeText}>temps : {time.toLocaleTimeString()}</Text>
+                    </View>
+                </View>
+                <View style={styles.sensorsContainer}>
+                    <View>
+                        <View>
+                            <Text style={styles.sensorsText}>Temperature: {temperature.toFixed(3)} °C</Text>
+                            <Slider
+                                style={{ width: 200, height: 40 }}
+                                minimumValue={0}
+                                maximumValue={100}
+                                minimumTrackTintColor="red"
+                                maximumTrackTintColor="blue"
+                                value={temperature}
+                                onValueChange={(value) => {
+                                    setTemperature(value);
+                                    setTemperatureInput(value.toString());
+                                }}
+                            />
+                        </View>
+                        <View style={styles.inputContainerSensors}>
+                            <TextInput
+                                onChangeText={(value) => {
+                                    setTemperatureInput(value);
+                                    setTemperature(parseFloat(value) || 0);
+                                }}
+                                value={temperatureInput}
+                                placeholder="ou bien saisir la temperature ici"
+                                keyboardType="numeric"
+                            />
+                        </View>
+                    </View>
+                </View>
+                <View style={styles.sensorsContainer}>
+                    <View style={{ marginTop: 25 }}>
+                        <View>
+                            <Text style={styles.sensorsText}>Humidité: {humidity.toFixed(1)} %</Text>
+                            <Slider
+                                style={{ width: 200, height: 40 }}
+                                minimumValue={0}
+                                maximumValue={100}
+                                minimumTrackTintColor="blue"
+                                maximumTrackTintColor="gray"
+                                value={humidity}
+                                onValueChange={(value) => {
+                                    setHumidity(value);
+                                    setHumidityInput(value.toString());
+                                }}
+                            />
+                        </View>
+                        <View style={styles.inputContainerSensors}>
+                            <TextInput
+                                onChangeText={(value) => {
+                                    setHumidityInput(value);
+                                    setHumidity(parseFloat(value) || 0);
+                                }}
+                                value={humidityInput}
+                                placeholder="ou bien saisir l'humidité ici"
+                                keyboardType="numeric"
+                            />
+                        </View>
+                    </View>
+                </View>
+                <View style={styles.sensorsContainer}>
+                    <View style={{ marginTop: 25 }}>
+                        <View>
+                            <Text style={styles.sensorsText}>Temérature du sol: {soilTemp.toFixed(1)} °C</Text>
+                            <Slider
+                                style={{ width: 200, height: 40 }}
+                                minimumValue={0}
+                                maximumValue={100}
+                                minimumTrackTintColor="red"
+                                maximumTrackTintColor="blue"
+                                value={soilTemp}
+                                onValueChange={(value) => {
+                                    setSoilTemp(value);
+                                    setSoilTempInput(value.toString());
+                                }}
+                            />
+                        </View>
+                        <View style={styles.inputContainerSensors}>
+                            <TextInput
+                                onChangeText={(value) => {
+                                    setSoilTempInput(value);
+                                    setSoilTemp(parseFloat(value) || 0);
+                                }}
+                                value={soilTempInput}
+                                placeholder="ou bien saisir température du sol ici"
+                                keyboardType="numeric"
+                            />
+                        </View>
+                    </View>
+
+                </View>
+                <View style={styles.sensorsContainer}>
+                    <View style={{ marginTop: 25 }}>
+                        <View>
+                            <Text style={styles.sensorsText}>Humidité du sol: {soilMoisture.toFixed(1)} %</Text>
+                            <Slider
+                                style={{ width: 200, height: 40 }}
+                                minimumValue={0}
+                                maximumValue={100}
+                                minimumTrackTintColor="blue"
+                                maximumTrackTintColor="gray"
+                                value={soilMoisture}
+                                onValueChange={(value) => {
+                                    setSoilMoisture(value);
+                                    setSoilMoistureInput(value.toString());
+                                }}
+                            />
+                        </View>
+                        <View style={styles.inputContainerSensors}>
+                            <TextInput
+                                onChangeText={(value) => {
+                                    setSoilMoistureInput(value);
+                                    setSoilMoisture(parseFloat(value) || 0);
+                                }}
+                                value={soilMoistureInput}
+                                placeholder="ou bien saisir l'humidité du sol ici"
+                                keyboardType="numeric"
+                            />
+                        </View>
+                    </View>
+                </View>
+                <View style={styles.sensorsContainer}>
+                    <View style={{ marginTop: 25 }}>
+                        <View>
+                            <Text style={styles.sensorsText}>Luminosité: {light.toFixed(1)} %</Text>
+                            <Slider
+                                style={{ width: 200, height: 40 }}
+                                minimumValue={0}
+                                maximumValue={100}
+                                minimumTrackTintColor="yellow"
+                                maximumTrackTintColor="gray"
+                                value={light}
+                                onValueChange={(value) => {
+                                    setLight(value);
+                                    setLightInput(value.toString());
+                                }}
+                            />
+                        </View>
+                        <View style={styles.inputContainerSensors}>
+                            <TextInput
+                                onChangeText={(value) => {
+                                    setLightInput(value);
+                                    setLight(parseFloat(value) || 0);
+                                }}
+                                value={lightInput}
+                                placeholder="ou bien saisir la luminosité ici"
+                                keyboardType="numeric"
+                            />
+                        </View>
+                    </View>
+                </View>
+                <View style={styles.sensorsContainer}>
+                    <TextInput
+                        multiline
+                        numberOfLines={4}
+                        onChangeText={setNote}
+                        value={note}
+                        placeholder="Notes"
+                        style={{ width: '100%', height: 100, borderColor: '#000', borderWidth: 1 , textAlign:'left', justifyContent:'flex-start'}}
+
+                    />
+                </View>
+                <View style={styles.sensorsContainer}>
+                    <Pressable style={styles.submitButton} onPress={handleUploadSensorData}>
+                        {loading ? (
+                            <ActivityIndicator size="small" color="#0000ff" />
+                        ) : (
+                            <Text style={{ fontSize: 16 }}>Valider</Text>
+                        )}
+                    </Pressable>
+
+                </View>
+            </ScrollView>
         </View>
     )
 }
@@ -101,7 +341,10 @@ const styles = StyleSheet.create({
     pickerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
         borderBottomWidth: 1,
+        width: '80%',
     },
     picker: {
         flex: 1,
@@ -125,4 +368,46 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'white',
     },
+    sensorsContainer: {
+        width: '100%',
+        alignItems: 'center',
+        marginVertical: 15,
+    },
+    inputContainerSensors: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderColor: '#000',
+        borderBottomColor: 'lightgrey',
+        borderBottomWidth: 1,
+
+    },
+    sensorsText: {
+        fontSize: 14,
+        color: 'black',
+        fontWeight: 'bold',
+        alignSelf: 'flex-start',
+    },
+    dateAndTimeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        marginVertical: 15,
+    },
+    dateAndTimeText: {
+        alignSelf: 'flex-start',
+        marginTop: 10, marginLeft: 10,
+        fontWeight: 'bold',
+    },
+    submitButton: {
+        marginTop: 10,
+        width: '45%',
+        backgroundColor: 'orange',
+        borderRadius: 45,
+        padding: 10,
+        marginBottom: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        gap: 10
+      },
 })

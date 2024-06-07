@@ -22,6 +22,11 @@ const GreenhouseSensorsCard = ({ sensors, date, time }) => {
       <SensorReading label="Humidité du sol" value={`${sensors.soilMoisture}%`} />
       <SensorReading label="Temp du sol" value={`${sensors.soilTemp} °C`} />
     </View>
+    <View style={{flex:1,flexDirection:'column', alignItems:'center', justifyContent:'center', borderBottomWidth:1, borderColor:'lightgrey'}}>
+        <Text style={{fontWeight:'bold', fontSize: 14, padding:10}}>Notes</Text>
+        <Text style={{ fontSize: 14, padding:10}}>{sensors.note}</Text>
+
+      </View>
     </View>
   );
 };

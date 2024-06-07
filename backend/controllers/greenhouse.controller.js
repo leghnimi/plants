@@ -49,7 +49,7 @@ const oneGreenhouseById = async (req, res) => {
 
 const addSensorDataByGreenhouseName = async (req, res) => {
     const { greenhouseName } = req.params;
-    const { date, time, temperature, humidity, light, soilMoisture, soilTemp } = req.body;
+    const { date, time, temperature, humidity, light, soilMoisture, soilTemp, note } = req.body;
 
     try {
         const greenhouse = await Greenhouse.findOne({ greenhouseName });
@@ -71,10 +71,10 @@ const addSensorDataByGreenhouseName = async (req, res) => {
             }
 
             // Add the new data
-            sensorData.data.push({ time, temperature, humidity, light, soilMoisture, soilTemp });
+            sensorData.data.push({ time, temperature, humidity, light, soilMoisture, soilTemp, note });
         } else {
             // If sensor data for the current date doesn't exist, create a new document
-            greenhouse.sensors.push({ date, data: [{ time, temperature, humidity, light, soilMoisture, soilTemp }] });
+            greenhouse.sensors.push({ date, data: [{ time, temperature, humidity, light, soilMoisture, soilTemp, note }] });
         }
 
         await greenhouse.save();

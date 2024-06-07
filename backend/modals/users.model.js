@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
 
 const UserSchema = new mongoose.Schema({
     email: {
@@ -18,22 +16,8 @@ const UserSchema = new mongoose.Schema({
         enum: ['worker', 'engineer'],
         required: true
     }
-}
-    , {
-        timestamps: true
-    }
-);
-UserSchema.pre('save', function(next) {
-    if (this.isModified('password') || this.isNew) {
-        bcrypt.hash(this.password, saltRounds, (err, hashedPassword) => {
-            if (err) {
-                return next(err);
-            }
-            this.password = hashedPassword;
-            next();
-        });
-    } else {
-        return next();
-    }
+}, {
+    timestamps: true
 });
+
 module.exports = mongoose.model('User', UserSchema);

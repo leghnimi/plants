@@ -45,7 +45,8 @@ export default function SignupScreen() {
                     setSelectedRole('');
                 } else {
                     const errorData = await response.json();
-                    alert(`Erreur: ${errorData.error}`);
+                    console.log(errorData);
+                    alert(`Erreur: ${JSON.stringify(errorData.message)}`);
                 }
             }
             catch (err) {

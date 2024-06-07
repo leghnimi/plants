@@ -24,6 +24,10 @@ const SensorDataSchema = new mongoose.Schema({
     soilTemp: {
         type: Number,
         required: false
+    }, 
+    note:{
+        type: String,
+        required: false
     }
 });
 

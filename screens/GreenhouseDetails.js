@@ -13,7 +13,7 @@ export default function GreenhouseDetails({ route }) {
     const [greenhouseDetails, setGreenhouseDetails] = useState(null);
     const [weather, setWeather] = useState(null);
     const [plant, setPlants] = useState(null);
-    const [selectedDate, setSelectedDate] = useState(new Date( ));
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
 
     useEffect(() => {
@@ -111,27 +111,31 @@ export default function GreenhouseDetails({ route }) {
                             <Picker.Item key={index} label={new Date(sensor.date).toLocaleDateString()} value={sensor.date} />
                         ))}
                     </Picker>
-                    <View style={{flex:1}}>
+                    <View style={{ flex: 1 }}>
                         {greenhouseDetails?.sensors.filter(sensor => sensor.date === selectedDate).map((sensor, index) => {
                             let date = new Date(sensor.date);
                             let formattedDate = date.toLocaleDateString();
-
                             return (
                                 <View key={index}>
-                                    {sensor.data.map((data, dataIndex) => (
-                                        <GreenhouseSensorsCard
-                                            key={dataIndex}
-                                            date={formattedDate}
-                                            time={data.time}
-                                            sensors={{
-                                                temperature: data.temperature,
-                                                humidity: data.humidity,
-                                                light: data.light,
-                                                soilMoisture: data.soilMoisture,
-                                                soilTemp: data.soilTemp
-                                            }}
-                                        />
-                                    ))}
+                                    {sensor.data.map((data, dataIndex) => {
+                                        let time = new Date(data.time);
+                                        let formattedTime = time.toLocaleTimeString();
+                                        return (
+                                            <GreenhouseSensorsCard
+                                                key={dataIndex}
+                                                date={formattedDate}
+                                                time={formattedTime}
+                                                sensors={{
+                                                    temperature: data.temperature,
+                                                    humidity: data.humidity,
+                                                    light: data.light,
+                                                    soilMoisture: data.soilMoisture,
+                                                    soilTemp: data.soilTemp,
+                                                    note: data.note
+                                                }}
+                                            />
+                                        )
+                                    })}
                                 </View>
                             );
                         })}

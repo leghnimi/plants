@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../modals/users.model');
+const saltRounds = 10;
+const jwt = require('jsonwebtoken');
 
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
@@ -17,7 +19,9 @@ const loginUser = async (req, res) => {
             return res.status(400).json({ message: 'Addresse mail ou bien mot de passe erroné' });
         }
 
-        res.json({ message: 'Logged in successfully' });
+        const token = jwt.sign({id: user._id, role: user.role}, process.env.JWT_SECRET, { expiresIn: '8h' });
+
+        res.json({ message: 'authentifié avec succès' }, user, token);
     } catch (err) {
         res.status(500).json({ message: 'An error occurred', err });
     }
@@ -25,11 +29,31 @@ const loginUser = async (req, res) => {
 
 const signUpUser = async (req, res) => {
     try {
-       const user =  await User.create(req.body)
-        res.status(200).json('user created successfully')
+        const { email, password, role } = req.body;
+
+        // Check if role is provided and is valid
+        if (!role || !['worker', 'engineer'].includes(role)) {
+            return res.status(400).json({ message: 'Vous devez choisir un role valide' });
+        }
+
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+            return res.status(400).json({ message: 'Un compte avec cette adresse mail existe déjà' });
+        }
+
+        // Hash the password before saving the user
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const user = await User.create({ email, password: hashedPassword, role });
+
+        // Create a JWT token
+        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.status(200).json({ message: 'Compte créé avec succès',user, token });
     }
     catch (err) {
-        res.status(500).json({ message: err.message })
+        res.status(500).json({ message: err.message });
     }
 }
 
