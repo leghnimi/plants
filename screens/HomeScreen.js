@@ -1,13 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, StyleSheet, Image, Animated, TouchableOpacity } from 'react-native';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
-  const [hasNavigated, setHasNavigated] = useState(false);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -15,27 +13,33 @@ export default function HomeScreen() {
       duration: 2000,
       useNativeDriver: true,
     }).start();
-
-    setTimeout(() => {
-      navigation.navigate('LoginScreen');
-      setHasNavigated(true);
-    }, 2000);
-  }, [fadeAnim, navigation]);
+  }, [fadeAnim]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Plant Monitor</Text>
-      <Text style={styles.slogan}>Prenez soin de vos plantes</Text>
-      <Text style={styles.sloganBottom}>en toute sérénité</Text>
-      <Animated.Image source={require('../assets/green-house.png')} style={styles.image} />
-      {hasNavigated && isFocused && (
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('LoginScreen')}
-        >
-          <Text style={styles.buttonText}>Se connecter</Text>
-        </TouchableOpacity>
-      )}
+      <Animated.Image source={require('../assets/background.jpg')} style={styles.image} />
+      <View style={styles.contentContainer}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.header}>Plant Monitor</Text>
+          <View style={styles.sloganContainer}>
+            <Text style={styles.slogan}>Prenez soin de vos plantes</Text>
+            <Text style={styles.sloganBottom}>en toute sérénité</Text>
+          </View>
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <Text style={styles.buttonText}>Se connecter</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={()=>{
+            navigation.navigate('SignUp')
+          }}>
+          <Text style={styles.link}> Créer un compte </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       <StatusBar style="auto" />
     </View>
   );
@@ -44,49 +48,61 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  headerContainer: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
   },
   header: {
-    fontSize: 35,
+    fontSize: 50,
     fontWeight: 'bold',
-    marginTop: 50,
-    color: 'green',
-    position: 'absolute',
-    top: '16%',
+    color: 'white',
+    marginBottom: 20,
+  },
+  sloganContainer: {
+    alignItems: 'center',
   },
   slogan: {
-    fontSize: 18,
-    color: 'green',
-    position: 'absolute',
-    top: '30%',
+    fontSize: 20,
+    color: 'white',
   },
   sloganBottom: {
-    fontSize: 18,
-    color: 'green',
-    position: 'absolute',
-    top: '33%',
+    fontSize: 20,
+    color: 'white',
   },
   image: {
     width: '100%',
     height: '100%',
     position: 'absolute',
   },
-  button: {
-    flex: 1,
-    position: 'absolute',
-    bottom: 10,
-    alignSelf: 'baseline',
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingBottom: 100,
   },
   button: {
-    backgroundColor: 'green',
-    padding: 15,
-    borderRadius: 5,
-    width:'35%'
+    borderRadius: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    width: '80%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonText: {
     color: 'white',
     textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
+  link:{
+    marginTop: 30,
+    color: 'white',
+    fontWeight: 'bold',
+  }
 });

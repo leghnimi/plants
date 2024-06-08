@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React,{useEffect, useState} from 'react'
 import { Text, View, StyleSheet, Modal, ImageBackground, Pressable, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Picker } from '@react-native-picker/picker';
 
-
-export default function SignupScreen() {
+function RecoverPasswordScreen() {
     const navigation = useNavigation();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
@@ -13,19 +12,21 @@ export default function SignupScreen() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [selectedRole, setSelectedRole] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    const [isConfirmNewPasswordVisible, setIsConfirmNewPasswordVisible] = useState(false);
 
     const handleValidation = async () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!email || !password || !confirmPassword || !selectedRole) {
+    
+        if (!email || !password || !confirmPassword) {
             alert('Veuillez remplir tous les champs');
         } else if (!emailRegex.test(email)) {
             alert('Veuillez entrer une adresse e-mail valide');
-        } else if (password !== confirmPassword) {
+        } else if (confirmPassword !== confirmNewPassword) {
             alert('Les mots de passe ne correspondent pas');
         } else {
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/signup`, {
+                const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/forgot-password`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -33,20 +34,18 @@ export default function SignupScreen() {
                     body: JSON.stringify({
                         email,
                         password,
-                        role: selectedRole
+                        newPassword: confirmPassword,
                     })
                 });
-
+    
                 if (response.ok) {
-                    alert('Utilisateur créé avec succès');
+                    alert('Mot de passe changé avec succès');
                     setEmail('');
                     setPassword('');
                     setConfirmPassword('');
-                    setSelectedRole('');
                     navigation.navigate('Login');
                 } else {
                     const errorData = await response.json();
-                    console.log(errorData);
                     alert(`Erreur: ${JSON.stringify(errorData.message)}`);
                 }
             }
@@ -55,7 +54,7 @@ export default function SignupScreen() {
                 alert('Une erreur est survenue');
             }
         }
-    }
+    };
 
     return (
         <View style={styles.container}>
@@ -66,7 +65,7 @@ export default function SignupScreen() {
                             <Pressable style={styles.backButton} onPress={() => navigation.navigate('Home')}>
                                 <Icon name="long-arrow-left" size={25} color="#000" />
                             </Pressable>
-                            <Text style={styles.headerText}>S'enregistrer</Text>
+                            <Text style={styles.headerText}>Changer Mot De Passe</Text>
                             <View style={styles.inputContainer}>
                                 <Icon name="user" size={20} color="#000" />
                                 <TextInput
@@ -83,7 +82,7 @@ export default function SignupScreen() {
                                     style={styles.input}
                                     onChangeText={setPassword}
                                     value={password}
-                                    placeholder="Mot de passe"
+                                    placeholder="Ancien mot de passe"
                                     secureTextEntry={!isPasswordVisible}
                                 />
                                 <Pressable onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
@@ -96,38 +95,32 @@ export default function SignupScreen() {
                                     style={styles.input}
                                     onChangeText={setConfirmPassword}
                                     value={confirmPassword}
-                                    placeholder="Confirmer mot de passe"
+                                    placeholder="Nouveaux mot de passe"
                                     secureTextEntry={!isConfirmPasswordVisible}
                                 />
                                 <Pressable onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}>
                                     <Icon name={isConfirmPasswordVisible ? "eye-slash" : "eye"} size={20} color="#000" />
                                 </Pressable>
                             </View>
-                            <View style={styles.inputRole}>
-                                <Icon name="user" size={20} color="#000" />
-                                <Picker
-                                    selectedValue={selectedRole}
-                                    style={{ height: 50, width: '100%' }}
-                                    onValueChange={(itemValue, itemIndex) =>
-                                        setSelectedRole(itemValue)
-                                    }>
-                                    <Picker.Item label="Choisissez un rôle" value="" />
-                                    <Picker.Item label="Ouvrier" value="worker" />
-                                    <Picker.Item label="Ingenieur" value="engineer" />
-                                </Picker>
+                            <View style={styles.inputContainer}>
+                                <Icon name="lock" size={20} color="#000" />
+                                <TextInput
+                                    style={styles.input}
+                                    onChangeText={setConfirmNewPassword}
+                                    value={confirmNewPassword}
+                                    placeholder="Confirmer nouveaux mot de passe"
+                                    secureTextEntry={!isConfirmNewPasswordVisible}
+                                />
+                                <Pressable onPress={() => setIsConfirmNewPasswordVisible(!isConfirmNewPasswordVisible)}>
+                                    <Icon name={isConfirmNewPasswordVisible ? "eye-slash" : "eye"} size={20} color="#000" />
+                                </Pressable>
                             </View>
                             <View style={styles.loginContainer}>
                                 <Pressable style={{ justifyContent: 'center', alignItems: 'center', height:25 }} onPress={handleValidation}>
-                                    <Text style={{color:'white', fontWeight:'bold'}}>Créer compte</Text>
+                                    <Text style={{color:'white', fontWeight:'bold'}}>Changer mot de passe</Text>
                                 </Pressable>
                             </View>
-                            <View style={styles.bottomView}>
-                                <Pressable onPress={() => navigation.navigate('Login')}>
-                                    <Text style={styles.subText}>
-                                        <Text style={styles.linkText}>Vous avez déja un compte?</Text>
-                                    </Text>
-                                </Pressable>
-                            </View>
+
                         </View>
                     </View>
                 </ImageBackground>
@@ -135,7 +128,7 @@ export default function SignupScreen() {
         </View>
     );
 }
-
+export default RecoverPasswordScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, ImageBackground } from 'react-native'
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import WeatherCard from '../components/weatherCard';
 import MapComponent from '../components/MapComponent';
@@ -9,6 +9,7 @@ import { Picker } from '@react-native-picker/picker';
 
 
 export default function GreenhouseDetails({ route }) {
+    
     const { id } = route.params
     const [greenhouseDetails, setGreenhouseDetails] = useState(null);
     const [weather, setWeather] = useState(null);
@@ -64,6 +65,8 @@ export default function GreenhouseDetails({ route }) {
 
     return (
         <View style={styles.container}>
+            <ImageBackground source={require('../assets/background.jpg')} style={styles.image} />
+            <Text style={styles.title}>Details serre</Text>
             <ScrollView>
                 <View style={styles.detailsHeader}>
                     <View style={{ flex: 1 }}>
@@ -155,6 +158,8 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: 'white',
         flexDirection: 'row',
+        borderRadius: 20,
+        margin: 10,
     },
     plantsContainer: {
         flexDirection: 'row',
@@ -174,5 +179,19 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginVertical: 10,
+        color:'white'
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+    },
+    title: {
+        marginTop:'10%',
+        fontSize: 40,
+        fontWeight: 'bold',
+        color: 'white',
+        alignSelf: 'flex-start',
+        marginLeft: 10,
     },
 })  

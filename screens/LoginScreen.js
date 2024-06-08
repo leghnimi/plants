@@ -47,12 +47,12 @@ export default function LoginScreen() {
         //     console.log(err);
         //     alert('Une erreur est survenue');
         // }
-        navigation.navigate('Greenhouse')
-    }
+        navigation.navigate('TabScreen', { screen: 'Greenhouse' })  
+      }
     return (
         <View style={styles.container}>
             <Modal animationType="slide" transparent={true} visible={modalVisible}>
-                <ImageBackground source={require('../assets/greenBackground.png')} style={styles.image}>
+                <ImageBackground source={require('../assets/background.jpg')} style={styles.image}>
                     <View style={styles.centeredView}>
                         <View style={styles.modalView}>
                             <Pressable style={styles.backButton} onPress={() => navigation.navigate('Home')}>
@@ -83,17 +83,17 @@ export default function LoginScreen() {
                                 </Pressable>
                             </View>
                             <View style={styles.loginContainer}>
-                                <Pressable style={{ justifyContent: 'center', alignItems: 'center' }} onPress={handleLogin}>
-                                    <Text>Se connecter</Text>
+                                <Pressable style={{ justifyContent: 'center', alignItems: 'center', height:25 }} onPress={handleLogin}>
+                                    <Text style={{color:"white", fontWeight:'bold'}}>Se connecter</Text>
                                 </Pressable>
                             </View>
                             <View style={styles.bottomView}>
-                                <Pressable onPress={() => navigation.navigate('SignUpScreen')}>
+                                <Pressable onPress={() => navigation.navigate('RecoverPassword')}>
                                     <Text style={styles.subText}>
                                         <Text style={styles.linkText}>Mot de passe oublieé?</Text>
                                     </Text>
                                 </Pressable>
-                                <Pressable onPress={() => navigation.navigate('SignUpScreen')}>
+                                <Pressable onPress={() => navigation.navigate('SignUp')}>
                                     <Text style={styles.subText}>
                                         <Text style={styles.linkText}>S'enregistrer</Text>
                                     </Text>
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     },
     loginContainer: {
         width: '90%',
-        backgroundColor: 'orange',
+        backgroundColor: 'green',
         borderRadius: 45,
         padding: 10,
         marginTop: 25,

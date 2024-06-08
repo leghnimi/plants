@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, Text } from "react-native";
+import { View, ScrollView, StyleSheet, Text, ImageBackground } from "react-native";
 import GreenhouseCard from "../components/GreenhouseCard";
 import { useNavigation } from '@react-navigation/native';
 
@@ -24,10 +24,12 @@ export default function GreenhouseScreen() {
 
 
     const handleGreenhousePress = (id) => {
-        navigation.navigate('GreenhouseDetails', { id });
+        navigation.navigate('HomeStack',{screen:'GreenhouseDetails', params: {id}});
     };
     return (
         <View style={styles.container}>
+            <ImageBackground source={require('../assets/background.jpg')} style={styles.image}/>
+            <Text style={styles.title}>Serres</Text>
             <ScrollView contentContainerStyle={{justifyContent:'center', alignItems:'center', gap:20}}>
                 {greenhouses.map((greenhouse) => (
                     <GreenhouseCard
@@ -46,8 +48,22 @@ export default function GreenhouseScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginTop: 10,
-        marginBottom: 50,
+        paddingTop:10,
+    },
+    image: {
+        width: '100%', // Cover the full width of the screen
+        height: '100%', // Cover the full height of the screen
+        position: 'absolute', // Position it absolutely
+        resizeMode: 'cover',
+        justifyContent: 'center',
+    },
+    title: {
+        marginTop:'10%',
+        fontSize: 40,
+        fontWeight: 'bold',
+        color: 'white',
+        alignSelf: 'flex-start',
+        marginLeft: 10,
     },
 
 })

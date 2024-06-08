@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { View, StyleSheet, TouchableOpacity, Text, TextInput, ScrollView, Pressable, ActivityIndicator } from "react-native"
+import { View, StyleSheet, TouchableOpacity, Text, TextInput, ScrollView, Pressable, ActivityIndicator, ImageBackground } from "react-native"
 import { Picker } from "@react-native-picker/picker";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -104,6 +104,9 @@ export default function WorkerInputScreen() {
 
     return (
         <View style={styles.container}>
+            <ImageBackground source={require('../assets/background.jpg')} style={styles.image} />
+            <Text style={styles.title}>Saisie des données</Text>
+
             <ScrollView>
 
                 <View style={styles.inputContainer}>
@@ -312,16 +315,16 @@ export default function WorkerInputScreen() {
                         onChangeText={setNote}
                         value={note}
                         placeholder="Notes"
-                        style={{ width: '100%', height: 100, borderColor: '#000', borderWidth: 1 , textAlign:'left', justifyContent:'flex-start'}}
+                        style={{ width: '100%', height: 100, textAlign:'center', justifyContent:'flex-start'}}
 
                     />
                 </View>
-                <View style={styles.sensorsContainer}>
+                <View style={{width:'100%', alignItems:'center', marginVertical:15}}>
                     <Pressable style={styles.submitButton} onPress={handleUploadSensorData}>
                         {loading ? (
                             <ActivityIndicator size="small" color="#0000ff" />
                         ) : (
-                            <Text style={{ fontSize: 16 }}>Valider</Text>
+                            <Text style={{ fontSize: 16, color:'black', fontWeight:'bold' }}>Valider</Text>
                         )}
                     </Pressable>
 
@@ -335,7 +338,6 @@ export default function WorkerInputScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 10,
         alignItems: 'center',
     },
     pickerContainer: {
@@ -356,7 +358,11 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         width: '100%',
+        marginTop: 10,
         padding: 10,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        borderRadius: 10, 
+        marginBottom: 10,
     },
     button: {
         backgroundColor: 'green',
@@ -372,6 +378,10 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         marginVertical: 15,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        borderRadius: 10, 
+        padding: 10,
+        marginBottom: 10,
     },
     inputContainerSensors: {
         flexDirection: 'row',
@@ -392,6 +402,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '100%',
         marginVertical: 15,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        borderRadius: 10, 
+        padding: 10,
+        marginBottom: 10,
     },
     dateAndTimeText: {
         alignSelf: 'flex-start',
@@ -399,15 +413,26 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     submitButton: {
-        marginTop: 10,
-        width: '45%',
-        backgroundColor: 'orange',
-        borderRadius: 45,
-        padding: 10,
-        marginBottom: 15,
+        borderRadius: 15,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        width: '80%',
+        height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        alignSelf: 'center',
-        gap: 10
       },
+    image: {
+        width: '100%',
+        height: '100%', 
+        position: 'absolute',
+        resizeMode: 'cover',
+        justifyContent: 'center',
+    },
+    title: {
+        marginTop:'10%',
+        fontSize: 40,
+        fontWeight: 'bold',
+        color: 'white',
+        alignSelf: 'flex-start',
+        marginLeft: 10,
+    },
 })

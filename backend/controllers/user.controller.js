@@ -55,6 +55,33 @@ const signUpUser = async (req, res) => {
     catch (err) {
         res.status(500).json({ message: err.message });
     }
+};
+
+const changePassword = async (req, res) => {
+    try {
+        const { email, password, newPassword } = req.body;
+
+        const user = await User.findOne({ email });
+        
+        if (!user) {
+            return res.status(400).json({ message: 'Utilisateur non trouvé' });
+        }
+
+        const match = await bcrypt.compare(password, user.password);
+
+        if (!match) {
+            return res.status(400).json({ message: 'Mot de passe incorrect' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+        await User.updateOne({ email }, { password: hashedPassword });
+
+        res.status(200).json({ message: 'Mot de passe changé avec succès' });
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 }
 
-module.exports = { loginUser, signUpUser };
+module.exports = { loginUser, signUpUser, changePassword };

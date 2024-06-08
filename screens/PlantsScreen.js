@@ -203,7 +203,7 @@ export default function PlantsScreen() {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../assets/plantsBackground.png')} style={{
+      <ImageBackground source={require('../assets/background.jpg')} style={{
         flex: 1,
         width: '100%',
         height: '100%',
@@ -380,13 +380,17 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: '45%',
     backgroundColor: 'orange',
-    borderRadius: 45,
     padding: 10,
     marginBottom: 15,
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
-    gap: 10
+    gap: 10,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   inputContainer: {
     flexDirection: 'row',
