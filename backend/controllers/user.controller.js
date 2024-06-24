@@ -1,87 +1,103 @@
-const bcrypt = require('bcrypt');
-const User = require('../modals/users.model');
+const bcrypt = require("bcrypt");
+const User = require("../modals/users.model");
 const saltRounds = 10;
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    try {
-        const user = await User.findOne({ email });
+  try {
+    const user = await User.findOne({ email: email });
 
-        if (!user) {
-            return res.status(400).json({ message: 'Addresse mail ou bien mot de passe erroné' });
-        }
-
-        const match = await bcrypt.compare(password, user.password);
-
-        if (!match) {
-            return res.status(400).json({ message: 'Addresse mail ou bien mot de passe erroné' });
-        }
-
-        const token = jwt.sign({id: user._id, role: user.role}, process.env.JWT_SECRET, { expiresIn: '8h' });
-
-        res.json({ message: 'authentifié avec succès' }, user, token);
-    } catch (err) {
-        res.status(500).json({ message: 'An error occurred', err });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Addresse mail ou bien mot de passe erroné" });
     }
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res
+        .status(400)
+        .json({ message: "Addresse mail ou bien mot de passe erroné" });
+    }
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "8h" }
+    );
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    res.json({ message: "authentifié avec succès", user: userObj, token });
+  } catch (err) {
+    res.status(500).json({ message: "An error occurred", err });
+  }
 };
 
 const signUpUser = async (req, res) => {
-    try {
-        const { email, password, role } = req.body;
+  try {
+    const { email, password, role } = req.body;
 
-        // Check if role is provided and is valid
-        if (!role || !['worker', 'engineer'].includes(role)) {
-            return res.status(400).json({ message: 'Vous devez choisir un role valide' });
-        }
-
-        const existingUser = await User.findOne({ email });
-
-        if (existingUser) {
-            return res.status(400).json({ message: 'Un compte avec cette adresse mail existe déjà' });
-        }
-
-        // Hash the password before saving the user
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-        const user = await User.create({ email, password: hashedPassword, role });
-
-        // Create a JWT token
-        const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        res.status(200).json({ message: 'Compte créé avec succès',user, token });
+    // Check if role is provided and is valid
+    if (!role || !["worker", "engineer"].includes(role)) {
+      return res
+        .status(400)
+        .json({ message: "Vous devez choisir un role valide" });
     }
-    catch (err) {
-        res.status(500).json({ message: err.message });
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ message: "Un compte avec cette adresse mail existe déjà" });
     }
+
+    // Hash the password before saving the user
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const user = await User.create({ email, password: hashedPassword, role });
+
+    // Create a JWT token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ message: "Compte créé avec succès", user, token });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 const changePassword = async (req, res) => {
-    try {
-        const { email, password, newPassword } = req.body;
+  try {
+    const { email, password, newPassword } = req.body;
 
-        const user = await User.findOne({ email });
-        
-        if (!user) {
-            return res.status(400).json({ message: 'Utilisateur non trouvé' });
-        }
+    const user = await User.findOne({ email });
 
-        const match = await bcrypt.compare(password, user.password);
-
-        if (!match) {
-            return res.status(400).json({ message: 'Mot de passe incorrect' });
-        }
-
-        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-
-        await User.updateOne({ email }, { password: hashedPassword });
-
-        res.status(200).json({ message: 'Mot de passe changé avec succès' });
+    if (!user) {
+      return res.status(400).json({ message: "Utilisateur non trouvé" });
     }
-    catch (err) {
-        res.status(500).json({ message: err.message });
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res.status(400).json({ message: "Mot de passe incorrect" });
     }
-}
+
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    await User.updateOne({ email }, { password: hashedPassword });
+
+    res.status(200).json({ message: "Mot de passe changé avec succès" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 module.exports = { loginUser, signUpUser, changePassword };

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 const LocationSuggestions = ({ locations, onSelect }) => {
   return (
@@ -19,7 +19,7 @@ const LocationSuggestions = ({ locations, onSelect }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 5,
     padding: 10,
     marginTop: 5,

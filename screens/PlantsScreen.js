@@ -1,35 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { Text, View, StyleSheet, Pressable, ImageBackground, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Entypo from 'react-native-vector-icons/Entypo';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import ModalUniversal from '../components/ModalUniversal';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Octicons from 'react-native-vector-icons/Octicons';
-import * as ImagePicker from 'expo-image-picker';
-import ImageViewer from '../components/ImageViewer';
-import { Picker } from '@react-native-picker/picker';
+import React, { useState, useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+  ImageBackground,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import ModalUniversal from "../components/ModalUniversal";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Octicons from "react-native-vector-icons/Octicons";
+import * as ImagePicker from "expo-image-picker";
+import ImageViewer from "../components/ImageViewer";
+import { Picker } from "@react-native-picker/picker";
 
 export default function PlantsScreen() {
   const [visibility, setVisibility] = useState(false);
   const [visibitlityGreenhouse, setVisibilityGreenhouse] = useState(false);
-  const [plantName, setPlantName] = useState('');
-  const [description, setDescription] = useState('');
+  const [plantName, setPlantName] = useState("");
+  const [description, setDescription] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingGreenhouse, setIsLoadingGreenhouse] = useState(false);
-  const [greenhouseName, setGreenhouseName] = useState('');
-  const [numberOfPlants, setNumberOfPlants] = useState('');
-  const [greenhouseLocation, setGreenhouseLocation] = useState('');
-  const [plantsInGreenhouse, setPlantsInGreenhouse] = useState('');
+  const [greenhouseName, setGreenhouseName] = useState("");
+  const [numberOfPlants, setNumberOfPlants] = useState("");
+  const [greenhouseLocation, setGreenhouseLocation] = useState("");
+  const [plantsInGreenhouse, setPlantsInGreenhouse] = useState("");
   const [plants, setPlants] = useState([]);
   const [coordinates, setCoordinates] = useState({
     latitude: 0,
     longitude: 0,
   });
-  const [locationInput, setLocationInput] = useState('');
+  const [locationInput, setLocationInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [data, setData] = useState(null);
 
@@ -39,11 +48,17 @@ export default function PlantsScreen() {
 
   const handleSearch = async () => {
     try {
-      const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${locationInput}`);
+      const response = await fetch(
+        `https://geocoding-api.open-meteo.com/v1/search?name=${locationInput}`
+      );
       const responseData = await response.json();
       setData(responseData);
       if (responseData && responseData.results) {
-        setSuggestions(responseData.results.map(result => `${result.admin1}, ${result.country}`));
+        setSuggestions(
+          responseData.results.map(
+            (result) => `${result.admin1}, ${result.country}`
+          )
+        );
       } else {
         setSuggestions([]);
       }
@@ -53,7 +68,9 @@ export default function PlantsScreen() {
   };
 
   const handleLocationSelect = (location) => {
-    const selectedResult = data.results.find((result) => `${result.admin1}, ${result.country}` === location);
+    const selectedResult = data.results.find(
+      (result) => `${result.admin1}, ${result.country}` === location
+    );
     if (selectedResult) {
       setCoordinates({
         latitude: selectedResult.latitude,
@@ -64,7 +81,6 @@ export default function PlantsScreen() {
     setLocationInput(location);
     setSuggestions([]);
   };
-
 
   useEffect(() => {
     return () => {
@@ -78,7 +94,9 @@ export default function PlantsScreen() {
 
   const fetchPlants = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/plants`);
+      const response = await fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/plants`
+      );
       const data = await response.json();
       setPlants(data);
     } catch (err) {
@@ -88,17 +106,17 @@ export default function PlantsScreen() {
 
   const handleModalPlant = () => {
     setVisibility(true);
-  }
+  };
   const handleModalGreenhouse = () => {
     setVisibilityGreenhouse(true);
-  }
+  };
 
   const addPicture = async () => {
     // Request camera roll permissions
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    if (status !== 'granted') {
-      alert('Sorry, we need camera roll permissions to make this work!');
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!");
       return;
     }
 
@@ -110,13 +128,10 @@ export default function PlantsScreen() {
       quality: 1,
     });
 
-
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
-
     }
   };
-
 
   const uploadImage = async () => {
     setIsLoading(true);
@@ -124,28 +139,31 @@ export default function PlantsScreen() {
       const formData = new FormData();
       const imageFile = {
         uri: selectedImage,
-        type: 'image/jpeg',
-        name: 'image.jpg',
+        type: "image/jpeg",
+        name: "image.jpg",
       };
-      formData.append('image', imageFile);
-      formData.append('plantName', plantName);
-      formData.append('description', description);
+      formData.append("image", imageFile);
+      formData.append("plantName", plantName);
+      formData.append("description", description);
 
-      const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/upload`, {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
       if (response.ok) {
-        alert('Plant added successfully');
+        alert("Plant added successfully");
         // reset form fields
-        setPlantName('');
-        setDescription('');
+        setPlantName("");
+        setDescription("");
         setSelectedImage(null);
         fetchPlants();
         setIsLoading(false);
       } else {
         setIsLoading(false);
-        console.error('erreur ajout plante');
+        console.error("erreur ajout plante");
       }
     } catch (err) {
       setIsLoading(false);
@@ -157,59 +175,67 @@ export default function PlantsScreen() {
     if (selectedImage) {
       uploadImage();
     } else {
-      console.log('Please select an image first');
+      console.log("Please select an image first");
     }
   };
 
   const addGreenhouse = async () => {
     setIsLoadingGreenhouse(true);
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/add-greenhouse`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          greenhouseName: greenhouseName,
-          location: coordinates,
-          numberOfPlants: numberOfPlants,
-          plantType: plantsInGreenhouse,
-          city: greenhouseLocation,
-        }),
-      });
-      console.log('response', response);
+      const response = await fetch(
+        `${process.env.REACT_APP_API_ENDPOINT}/api/add-greenhouse`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            greenhouseName: greenhouseName,
+            location: coordinates,
+            numberOfPlants: numberOfPlants,
+            plantType: plantsInGreenhouse,
+            city: greenhouseLocation,
+          }),
+        }
+      );
+      console.log("response", response);
       if (response.ok) {
-        alert('serre ajoutée avec succès');
-        setGreenhouseName('');
-        setGreenhouseLocation('');
-        setNumberOfPlants('');
-        setPlantsInGreenhouse('');
+        alert("serre ajoutée avec succès");
+        setGreenhouseName("");
+        setGreenhouseLocation("");
+        setNumberOfPlants("");
+        setPlantsInGreenhouse("");
         setIsLoadingGreenhouse(false);
         setVisibilityGreenhouse(false);
       } else {
         setIsLoadingGreenhouse(false);
         const responseBody = await response.json();
-        console.error('Server responded with status 500', responseBody);
+        console.error("Server responded with status 500", responseBody);
         setIsLoadingGreenhouse(false);
-        console.error('une erreur est survenue lors de l\'ajout de la serre');
+        console.error("une erreur est survenue lors de l'ajout de la serre");
       }
     } catch (err) {
       setIsLoadingGreenhouse(false);
-      alert('une erreur est survenue lors de l\'ajout de la serre: ', err.message);
+      alert(
+        "une erreur est survenue lors de l'ajout de la serre: ",
+        err.message
+      );
       console.error(err);
     }
   };
 
-
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../assets/background.jpg')} style={{
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
+      <ImageBackground
+        source={require("../assets/background.jpg")}
+        style={{
+          flex: 1,
+          width: "100%",
+          height: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <View style={styles.addPlantButton}>
           <Pressable style={styles.addPlant} onPress={handleModalPlant}>
             <FontAwesome6 name="plus" size={15} color="#000" />
@@ -231,9 +257,11 @@ export default function PlantsScreen() {
               setVisibility(false);
               setSelectedImage(null); // Clear the selected image when closing the modal
             }}
-            style={{ position: 'absolute', top: 10, right: 15 }}
+            style={{ position: "absolute", top: 10, right: 15 }}
           />
-          <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Ajouter une plante</Text>
+          <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+            Ajouter une plante
+          </Text>
           <View style={styles.inputContainer}>
             <FontAwesome6 name="plant-wilt" size={20} color="#000" />
             <TextInput
@@ -257,7 +285,7 @@ export default function PlantsScreen() {
           {selectedImage ? (
             <View style={styles.imageContainer}>
               <ImageViewer
-                placeholderImageSource={require('../assets/icon.png')}
+                placeholderImageSource={require("../assets/icon.png")}
                 selectedImage={selectedImage}
                 setSelectedImage={setSelectedImage}
               />
@@ -287,8 +315,11 @@ export default function PlantsScreen() {
             onPress={() => {
               setVisibilityGreenhouse(false);
             }}
-            style={{ position: 'absolute', top: 10, right: 15 }} />
-          <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Ajouter une serre</Text>
+            style={{ position: "absolute", top: 10, right: 15 }}
+          />
+          <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+            Ajouter une serre
+          </Text>
           <View style={styles.inputContainer}>
             <FontAwesome6 name="pencil" size={20} color="#000" />
             <TextInput
@@ -307,7 +338,11 @@ export default function PlantsScreen() {
               placeholder="Emplacement de la serre"
             />
             <TouchableOpacity onPress={handleSearch}>
-              <MaterialCommunityIcons name="search-web" size={24} color="#000" />
+              <MaterialCommunityIcons
+                name="search-web"
+                size={24}
+                color="#000"
+              />
             </TouchableOpacity>
           </View>
           {suggestions.length > 0 && (
@@ -331,7 +366,11 @@ export default function PlantsScreen() {
               style={styles.picker}
             >
               {plants.map((plant, index) => (
-                <Picker.Item key={index} label={plant.plantName} value={plant.plantName} />
+                <Picker.Item
+                  key={index}
+                  label={plant.plantName}
+                  value={plant.plantName}
+                />
               ))}
             </Picker>
           </View>
@@ -340,7 +379,7 @@ export default function PlantsScreen() {
             <Octicons name="number" size={20} color="#000" />
             <TextInput
               style={styles.input}
-              keyboardType='numeric'
+              keyboardType="numeric"
               onChangeText={setNumberOfPlants}
               value={numberOfPlants}
               placeholder="nombre de plantes dans la serre"
@@ -355,7 +394,6 @@ export default function PlantsScreen() {
               )}
             </Pressable>
           </View>
-
         </ModalUniversal>
       </ImageBackground>
       <StatusBar style="auto" />
@@ -366,38 +404,38 @@ export default function PlantsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
   },
   addPlant: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 12,
   },
   addPlantButton: {
     marginTop: 10,
-    width: '45%',
-    backgroundColor: 'orange',
+    width: "45%",
+    backgroundColor: "orange",
     padding: 10,
     marginBottom: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
     gap: 10,
     borderRadius: 15,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderColor: '#000',
+    flexDirection: "row",
+    alignItems: "center",
+    borderColor: "#000",
     padding: 10,
-    borderBottomColor: 'lightgrey',
+    borderBottomColor: "lightgrey",
     borderBottomWidth: 1,
     gap: 10,
     marginBottom: 10,
@@ -408,14 +446,13 @@ const styles = StyleSheet.create({
   },
   pictureContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-
+    justifyContent: "center",
+    alignItems: "center",
   },
   imagePreviewContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   imagePreview: {
     width: 200,
@@ -423,34 +460,34 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   cancelButton: {
-    backgroundColor: 'red',
+    backgroundColor: "red",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
   },
   cancelButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
   },
   selectAnotherButton: {
-    backgroundColor: 'green',
+    backgroundColor: "green",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
   },
   selectAnotherButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
   },
   imageContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 10,
   },
   pickerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderBottomWidth: 1,
     padding: 10,
     marginTop: 10,
@@ -459,7 +496,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   suggestionsContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 5,
     padding: 10,
     marginVertical: 10,
@@ -467,5 +504,4 @@ const styles = StyleSheet.create({
   suggestionItem: {
     padding: 10,
   },
-
 });

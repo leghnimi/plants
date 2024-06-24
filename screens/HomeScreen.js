@@ -1,7 +1,14 @@
-import React, { useEffect, useRef } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { Text, View, StyleSheet, Image, Animated, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useRef } from "react";
+import { StatusBar } from "expo-status-bar";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  Animated,
+  TouchableOpacity,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -17,7 +24,10 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Animated.Image source={require('../assets/background.jpg')} style={styles.image} />
+      <Animated.Image
+        source={require("../assets/background.jpg")}
+        style={styles.image}
+      />
       <View style={styles.contentContainer}>
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Plant Monitor</Text>
@@ -29,14 +39,16 @@ export default function HomeScreen() {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate("Login")}
           >
             <Text style={styles.buttonText}>Se connecter</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=>{
-            navigation.navigate('SignUp')
-          }}>
-          <Text style={styles.link}> Créer un compte </Text>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("SignUp");
+            }}
+          >
+            <Text style={styles.link}> Créer un compte </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -48,61 +60,60 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    
   },
   contentContainer: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   headerContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   header: {
     fontSize: 50,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
     marginBottom: 20,
   },
   sloganContainer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   slogan: {
     fontSize: 20,
-    color: 'white',
+    color: "white",
   },
   sloganBottom: {
     fontSize: 20,
-    color: 'white',
+    color: "white",
   },
   image: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    width: "100%",
+    height: "100%",
+    position: "absolute",
   },
   buttonContainer: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+    alignItems: "center",
+    justifyContent: "flex-end",
     paddingBottom: 100,
   },
   button: {
     borderRadius: 15,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    width: '80%',
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    width: "80%",
     height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonText: {
-    color: 'white',
-    textAlign: 'center',
+    color: "white",
+    textAlign: "center",
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
-  link:{
+  link: {
     marginTop: 30,
-    color: 'white',
-    fontWeight: 'bold',
-  }
+    color: "white",
+    fontWeight: "bold",
+  },
 });
