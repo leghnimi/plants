@@ -6,6 +6,7 @@ import GreenhouseScreen from "../screens/GreenhouseScreen";
 import WorkerInputScreen from "../screens/WorkerInputScreen";
 import GreenhouseDetailsScreen from "../screens/GreenhouseDetails";
 import RecoverPasswordScreen from "../screens/RecoverPasswordScreen";
+import EngineerInputScreen from "../screens/EngineerInputScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
@@ -66,6 +67,7 @@ export function HomeStackScreen() {
 
 export function TabScreen() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isWorker, setIsWorker] = useState(false);
   useEffect(() => {
     const checkRole = async () => {
       const user = await AsyncStorage.getItem("user");
@@ -73,6 +75,9 @@ export function TabScreen() {
         const _user = JSON.parse(user);
         if (_user.role === "admin") {
           setIsAdmin(true);
+        }
+        if (_user.role === "worker") {
+          setIsWorker(true);
         }
       }
     };
@@ -97,6 +102,8 @@ export function TabScreen() {
             iconName = focused
               ? "account-supervisor"
               : "account-supervisor-outline";
+          } else if (route.name === "EngineerInput") {
+            iconName = focused ? "hammer" : "clipboard-text-outline";
           }
 
           return (
@@ -111,6 +118,10 @@ export function TabScreen() {
       })}
     >
       <Tab.Screen
+        name="HomeStack"
+        component={HomeStackScreen}
+        options={{ tabBarButton: () => null, headerShown: false }}      />
+      <Tab.Screen
         name="Plants"
         component={PlantsScreen}
         options={{ headerShown: false, title: "Ajout" }}
@@ -123,7 +134,12 @@ export function TabScreen() {
       <Tab.Screen
         name="WorkerInput"
         component={WorkerInputScreen}
-        options={{ headerShown: false, title: "Saisie des données" }}
+        options={{ headerShown: false, title: "Saisie ouvrier" }}
+      />
+      <Tab.Screen
+      name="EngineerInput"
+      component={EngineerInputScreen}
+      options={{ headerShown: false, title: "Saisie ingénieur" }}
       />
       {isAdmin && (
         <Tab.Screen

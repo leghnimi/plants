@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -14,6 +14,7 @@ import { Picker } from "@react-native-picker/picker";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Slider from "@react-native-community/slider";
+import { AppContext } from "../App";
 
 export default function WorkerInputScreen() {
   const [greenhouses, setGreenhouses] = useState([]);
@@ -34,6 +35,8 @@ export default function WorkerInputScreen() {
   const [lightInput, setLightInput] = useState("");
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
+  const { logout } = useContext(AppContext);
+
 
   useEffect(() => {
     const fetchGreenhouses = async () => {
@@ -379,6 +382,16 @@ export default function WorkerInputScreen() {
             )}
           </Pressable>
         </View>
+        <View style={styles.logoutContainer}>
+          <Pressable
+            style={styles.logoutButton}
+            onPress={logout}
+          >
+            <Text style={styles.logoutButtonText}>
+              Se déconnecter
+            </Text>
+          </Pressable>
+        </View>
       </ScrollView>
     </View>
   );
@@ -483,5 +496,22 @@ const styles = StyleSheet.create({
     color: "white",
     alignSelf: "flex-start",
     marginLeft: 10,
+  },
+  logoutContainer: {
+    width: "90%",
+    alignItems: "center",
+    marginBottom: 20,
+    alignSelf: "center",
+  },
+  logoutButton: {
+    backgroundColor: "red",
+    borderRadius: 25,
+    padding: 10,
+    width: "50%",
+    alignItems: "center",
+  },
+  logoutButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });

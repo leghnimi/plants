@@ -126,11 +126,6 @@ export default function LoginScreen() {
                     <Text style={styles.linkText}>Mot de passe oublieé?</Text>
                   </Text>
                 </Pressable>
-                <Pressable onPress={() => navigation.navigate("SignUp")}>
-                  <Text style={styles.subText}>
-                    <Text style={styles.linkText}>S'enregistrer</Text>
-                  </Text>
-                </Pressable>
               </View>
             </View>
           </View>
@@ -201,7 +196,7 @@ const styles = StyleSheet.create({
   bottomView: {
     flex: 1,
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     marginTop: 10,
     width: "100%",
   },

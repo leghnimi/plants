@@ -39,7 +39,8 @@ const loginUser = async (req, res) => {
 
 const signUpUser = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const { email, password, role, userName } = req.body;
+    console.log("Received signup request for:", { email, role, userName });
 
     // Check if role is provided and is valid
     if (!role || !["worker", "engineer"].includes(role)) {
@@ -48,18 +49,36 @@ const signUpUser = async (req, res) => {
         .json({ message: "Vous devez choisir un role valide" });
     }
 
-    const existingUser = await User.findOne({ email });
+    // Check for existing email
+    const existingEmail = await User.findOne({ email });
+    console.log("Existing user with email:", existingEmail);
 
-    if (existingUser) {
+    if (existingEmail) {
       return res
         .status(400)
         .json({ message: "Un compte avec cette adresse mail existe déjà" });
     }
 
+    // Check for existing username
+    const existingUserName = await User.findOne({ userName });
+    console.log("Existing user with username:", existingUserName);
+
+    if (existingUserName) {
+      return res
+        .status(400)
+        .json({ message: "Un compte avec ce nom d'utilisateur existe déjà" });
+    }
+
     // Hash the password before saving the user
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const user = await User.create({ email, password: hashedPassword, role });
+    // Create the new user
+    const user = await User.create({ 
+      email, 
+      password: hashedPassword, 
+      role, 
+      userName
+    });
 
     // Create a JWT token
     const token = jwt.sign(
@@ -70,6 +89,7 @@ const signUpUser = async (req, res) => {
 
     res.status(200).json({ message: "Compte créé avec succès", user, token });
   } catch (err) {
+    console.error("Error in signUpUser:", err);
     res.status(500).json({ message: err.message });
   }
 };

@@ -1,19 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Text,
   View,
   StyleSheet,
-  Modal,
   ImageBackground,
   Pressable,
   TextInput,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AppContext } from "../App";
+
 
 export default function SignupScreen() {
-  const navigation = useNavigation();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
@@ -21,6 +21,26 @@ export default function SignupScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
+  const [userName, setUserName] = useState("");
+  const [user, setUser] = useState(null);
+  const {logout} = useContext(AppContext);
+
+  console.log(user)
+
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const value = await AsyncStorage.getItem("user");
+        if (value !== null) {
+          setUser(JSON.parse(value));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    getUser();
+  }, []);
+
 
   const handleValidation = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,6 +64,7 @@ export default function SignupScreen() {
               email,
               password,
               role: selectedRole,
+              userName,
             }),
           }
         );
@@ -54,6 +75,7 @@ export default function SignupScreen() {
           setPassword("");
           setConfirmPassword("");
           setSelectedRole("");
+          setUserName("");
         } else {
           const errorData = await response.json();
           alert(`Erreur: ${JSON.stringify(errorData.message)}`);
@@ -65,12 +87,15 @@ export default function SignupScreen() {
     }
   };
 
+
+
   return (
     <View style={styles.container}>
       <ImageBackground
         source={require("../assets/background.jpg")}
         style={styles.image}
-      >
+        >
+          <Text>hello </Text>
         <View style={styles.centeredView}>
           <Text style={styles.headerText}>S'enregistrer</Text>
           <View style={styles.inputContainer}>
@@ -81,6 +106,15 @@ export default function SignupScreen() {
               value={email}
               placeholder="Addresse mail"
               keyboardType="email-address"
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Icon name="user" size={20} color="#000" />
+            <TextInput
+              style={styles.input}
+              onChangeText={setUserName}
+              value={userName}
+              placeholder="Nom d'utilisateur"
             />
           </View>
           <View style={styles.inputContainer}>
@@ -146,6 +180,20 @@ export default function SignupScreen() {
             >
               <Text style={{ color: "white", fontWeight: "bold" }}>
                 Créer compte
+              </Text>
+            </Pressable>
+          </View>
+          <View style={styles.loginContainer}>
+            <Pressable
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                height: 25,
+              }}
+              onPress={logout}
+            >
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                se déconnecter
               </Text>
             </Pressable>
           </View>

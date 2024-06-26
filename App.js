@@ -27,8 +27,16 @@ export default function App() {
     await AsyncStorage.setItem("user", JSON.stringify(data.user));
   };
 
+  const logout = async () => {
+    setIsAuthenticated(false);
+    await AsyncStorage.removeItem("isAuthenticated");
+    await AsyncStorage.removeItem("user");
+  };
+
   const value = {
+    isAuthenticated,
     login,
+    logout,
   };
 
   return (

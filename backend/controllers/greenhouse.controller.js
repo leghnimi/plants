@@ -85,5 +85,29 @@ const addSensorDataByGreenhouseName = async (req, res) => {
     }
 }
 
+const addEngineerActions = async (req, res) => {
+    const { greenhouseName } = req.params;
+    const {  date, action, details } = req.body;
 
-module.exports = { addGreenhouse, getGreenhouses, oneGreenhouseById, addSensorDataByGreenhouseName };
+    try {
+        const greenhouse = await Greenhouse.findOne({ greenhouseName });
+
+        if (!greenhouse) {
+            return res.status(404).json({ message: 'Greenhouse not found' });
+        }
+
+        // Add the new engineer action
+        greenhouse.engineerActions.push({ date, action, details });
+
+        await greenhouse.save();
+
+        res.status(201).json({ message: 'Engineer action added successfully', greenhouse });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
+
+
+
+module.exports = { addGreenhouse, getGreenhouses, oneGreenhouseById, addSensorDataByGreenhouseName, addEngineerActions };

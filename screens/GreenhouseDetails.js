@@ -14,11 +14,30 @@ import GreenhouseSensorsCard from "../components/GreenhouseSensorsCard";
 import { Picker } from "@react-native-picker/picker";
 
 export default function GreenhouseDetails({ route }) {
+  function formatDate(date) {
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
+
+    return [year, month, day].join('-');
+  }
+
+
   const { id } = route.params;
   const [greenhouseDetails, setGreenhouseDetails] = useState(null);
   const [weather, setWeather] = useState(null);
   const [plant, setPlants] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedActionsDate, setSelectedActionsDate] = useState(formatDate(new Date()));
+
+
+
 
   useEffect(() => {
     const fetchGreenhouseDetails = async () => {
@@ -34,7 +53,7 @@ export default function GreenhouseDetails({ route }) {
     };
 
     fetchGreenhouseDetails();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -176,6 +195,50 @@ export default function GreenhouseDetails({ route }) {
                 );
               })}
           </View>
+          <Text style={styles.titles}>Actions d'ingénieur</Text>
+          {greenhouseDetails ? (
+            <>
+              <Picker
+                selectedValue={selectedActionsDate}
+                onValueChange={(itemValue) => setSelectedActionsDate(itemValue)}
+                style={{
+                  width: "100%",
+                  backgroundColor: "white",
+                  borderRadius: 10,
+                  marginBottom: 20,
+                }}
+              >
+                {greenhouseDetails.engineerActions?.map((action, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={new Date(action.date).toLocaleDateString()}
+                    value={formatDate(action.date)}
+                  />
+                )) || []}
+              </Picker>
+              <View style={{ flex: 1, width: "100%", }}>
+                {greenhouseDetails.engineerActions
+                  ?.filter((action) => formatDate(action.date) === formatDate(selectedActionsDate))
+                  .map((action, index) => (
+                    <View key={index} style={{ margin: 10, backgroundColor: "white", borderRadius: 10 }}>
+                      <View style={styles.card}>
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                          <Text style={{ fontWeight: "bold", fontSize: 18 }}>Action: </Text>
+                          <Text>{action.action}</Text>
+                        </View>
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                          <Text style={{ fontWeight: "bold", fontSize: 18 }}>Details: </Text>
+                          <Text>{action.details}</Text>
+                        </View>
+
+                      </View>
+                    </View>
+                  )) || []}
+              </View>
+            </>
+          ) : (
+            <Text>Loading or no details available...</Text>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -225,5 +288,15 @@ const styles = StyleSheet.create({
     color: "white",
     alignSelf: "flex-start",
     marginLeft: 10,
+  },
+  card: {
+    padding: 20,
+    margin: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    elevation: 3,
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: 25
   },
 });

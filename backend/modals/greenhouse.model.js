@@ -31,6 +31,22 @@ const SensorDataSchema = new mongoose.Schema({
   },
 });
 
+const EngineerActionsSchema = new mongoose.Schema({
+  date: {
+    type: Date,
+    required: true,
+  },
+  action: {
+    type: String,
+    enum: ['fertilization', 'irrigation', 'temperature_control', 'pest_control', 'pruning', 'pollination', 'light_adjustment', 'harvesting', 'plant_health_assessment', 'equipment_maintenance'],
+    required: true,
+  },
+  details: {
+    type: String,
+    required: false,
+  },
+});
+
 const SensorSchema = new mongoose.Schema({
   date: {
     type: Date,
@@ -72,6 +88,7 @@ const GreenhouseSchema = new mongoose.Schema(
       required: true,
     },
     sensors: [SensorSchema],
+    engineerActions: [EngineerActionsSchema],
   },
   {
     timestamps: true,
