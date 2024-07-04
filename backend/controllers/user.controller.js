@@ -120,4 +120,54 @@ const changePassword = async (req, res) => {
   }
 };
 
-module.exports = { loginUser, signUpUser, changePassword };
+const getUsers = async (req, res) => {
+  console.log("Request received for getUsers API");
+
+  try {
+    const users = await User.find();
+    const userNamesAndEmails = users.map((user) => {
+      return { userName: user.userName, email: user.email };
+    });
+    res.status(200).json(userNamesAndEmails);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const DeleteUserByUserNameOrEmail = async (req, res) => {
+  console.log("Request received for DeleteUserByUserNameOrEmail API");
+
+  try {
+    console.log("req.params:", req.query); 
+    const identifier = req.query.identifier;
+    console.log("Identifier:", identifier); 
+
+    if (!identifier) {
+      return res.status(400).json({ message: "Identifier is required" });
+    }
+
+    let query = {};
+
+    // Determine if the identifier is an email or a username
+    if (identifier.includes('@')) {
+      query.email = identifier;
+    } else {
+      query.userName = identifier;
+    }
+
+    const user = await User.findOne(query);
+    console.log("User found", user);
+
+    if (!user) {
+      return res.status(400).json({ message: "Utilisateur non trouvé" });
+    }
+
+    await User.deleteOne(query);
+    res.status(200).json({ message: "Utilisateur supprimé avec succès" });
+  } catch (err) {
+    console.error("Error in DeleteUserByUserNameOrEmail:", err); // Improved error logging
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { loginUser, signUpUser, changePassword, getUsers, DeleteUserByUserNameOrEmail };

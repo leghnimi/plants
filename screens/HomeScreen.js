@@ -29,6 +29,28 @@ export default function HomeScreen() {
         style={styles.image}
       />
       <View style={styles.contentContainer}>
+        <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", marginTop: 50, marginHorizontal: 12 }}>
+          <View style={{ alignItems: "center" }}>
+
+            <Image
+              source={require("../assets/logoIset.png")}
+              style={{ width: 75, height: 75, }}
+              blurRadius={1}
+            />
+            <Text style={{ fontWeight: "bold", color: "white", fontSize: 12 }}>ISET SIDIBOUZID</Text>
+          </View>
+
+          <View style={{ alignItems: "center" }}>
+
+            <Image
+              source={require("../assets/college.png")}
+              style={{ width: 75, height: 75, }}
+              blurRadius={1}
+            />
+            <Text style={{ fontWeight: "bold", color: "white", fontSize: 12 }}>COLLEGE</Text>
+            <Text style={{ fontWeight: "bold", color: "white", fontSize: 12 }}>MAISONNEUVE</Text>
+          </View>
+        </View>
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Plant Monitor</Text>
           <View style={styles.sloganContainer}>

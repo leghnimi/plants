@@ -37,8 +37,8 @@ export default function WorkerInputScreen() {
   const [loading, setLoading] = useState(false);
   const { logout } = useContext(AppContext);
 
-
   useEffect(() => {
+    let isMounted = true;
     const fetchGreenhouses = async () => {
       try {
         const response = await fetch(
@@ -52,6 +52,10 @@ export default function WorkerInputScreen() {
     };
 
     fetchGreenhouses();
+      
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const onDateChange = (event, selectedDate) => {

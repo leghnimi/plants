@@ -14,6 +14,7 @@ export default function GreenhouseScreen() {
   const navigation = useNavigation();
 
   useEffect(() => {
+    let isMounted = true;
     const fetchGreenhouses = async () => {
       try {
         const response = await fetch(
@@ -22,11 +23,17 @@ export default function GreenhouseScreen() {
         const data = await response.json();
         setGreenhouses(data);
       } catch (err) {
-        console.error(err);
+        console.error('Fetch error:', err);
+        console.error('Error details:', err.message);
       }
     };
 
     fetchGreenhouses();
+
+      
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleGreenhousePress = (id) => {

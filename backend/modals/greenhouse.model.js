@@ -38,7 +38,7 @@ const EngineerActionsSchema = new mongoose.Schema({
   },
   action: {
     type: String,
-    enum: ['fertilization', 'irrigation', 'temperature_control', 'pest_control', 'pruning', 'pollination', 'light_adjustment', 'harvesting', 'plant_health_assessment', 'equipment_maintenance'],
+    enum: ['Fertilisation', 'Irrigation', 'controle de temperature', 'controle de parasites', 'Taille', 'Pollinisation', 'Ajustement de leclairage', 'Recolte', 'Evaluation de la sante des plantes', 'Maintenance de lequipement'],
     required: true,
   },
   details: {

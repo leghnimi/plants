@@ -93,12 +93,16 @@ export default function PlantsScreen() {
   }, []);
 
   const fetchPlants = async () => {
+    let isMounted = true;
     try {
       const response = await fetch(
         `${process.env.REACT_APP_API_ENDPOINT}/api/plants`
       );
       const data = await response.json();
       setPlants(data);
+      return () => {
+        isMounted = false;
+      }
     } catch (err) {
       console.error(err);
     }

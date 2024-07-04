@@ -40,12 +40,14 @@ export default function GreenhouseDetails({ route }) {
 
 
   useEffect(() => {
+    let isMounted = true;
     const fetchGreenhouseDetails = async () => {
       try {
         const response = await fetch(
           `${process.env.REACT_APP_API_ENDPOINT}/api/greenhouse/${id}`
         );
         const data = await response.json();
+        console.log(data)
         setGreenhouseDetails(data);
       } catch (err) {
         console.error(err);
@@ -73,6 +75,10 @@ export default function GreenhouseDetails({ route }) {
       }
     };
     fetchWeather();
+      
+    return () => {
+      isMounted = false;
+    };
   }, [greenhouseDetails]);
 
   useEffect(() => {

@@ -10,6 +10,7 @@ export const AppContext = createContext();
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [greenhouses, setGreenhouses] = useState([]);
 
   useEffect(() => {
     const _login = async () => {
@@ -19,6 +20,27 @@ export default function App() {
       }
     };
     _login();
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchGreenhouses = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_API_ENDPOINT}/api/greenhouses`
+        );
+        const data = await response.json();
+        setGreenhouses(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchGreenhouses();
+      
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = async (data) => {
@@ -37,6 +59,7 @@ export default function App() {
     isAuthenticated,
     login,
     logout,
+    greenhouses
   };
 
   return (

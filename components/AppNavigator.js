@@ -69,8 +69,10 @@ export function TabScreen() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isWorker, setIsWorker] = useState(false);
   useEffect(() => {
+    let isMounted = true;
     const checkRole = async () => {
       const user = await AsyncStorage.getItem("user");
+      console.log(user)
       if (user) {
         const _user = JSON.parse(user);
         if (_user.role === "admin") {
@@ -82,6 +84,9 @@ export function TabScreen() {
       }
     };
     checkRole();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -120,12 +125,13 @@ export function TabScreen() {
       <Tab.Screen
         name="HomeStack"
         component={HomeStackScreen}
-        options={{ tabBarButton: () => null, headerShown: false }}      />
-      <Tab.Screen
+        options={{ tabBarButton: () => null, headerShown: false }} />
+      {!isWorker && <Tab.Screen
         name="Plants"
         component={PlantsScreen}
         options={{ headerShown: false, title: "Ajout" }}
-      />
+      />}
+
       <Tab.Screen
         name="Greenhouse"
         component={GreenhouseScreen}
@@ -136,11 +142,12 @@ export function TabScreen() {
         component={WorkerInputScreen}
         options={{ headerShown: false, title: "Saisie ouvrier" }}
       />
-      <Tab.Screen
-      name="EngineerInput"
-      component={EngineerInputScreen}
-      options={{ headerShown: false, title: "Saisie ingénieur" }}
-      />
+
+      {!isWorker && <Tab.Screen
+        name="EngineerInput"
+        component={EngineerInputScreen}
+        options={{ headerShown: false, title: "Saisie ingénieur" }}
+      />}
       {isAdmin && (
         <Tab.Screen
           name="AddUser"

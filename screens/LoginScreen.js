@@ -20,6 +20,9 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+
+console.log(password)
+
   useFocusEffect(
     useCallback(() => {
       setModalVisible(true);
@@ -45,10 +48,11 @@ export default function LoginScreen() {
         }
       );
 
+      console.log(response)
       if (response.ok) {
         const data = await response.json();
         appContext.login(data);
-        alert("Connecté avec succès");
+        navigation.navigate("Greenhouse");
       } else {
         console.log();
         const errorData = await response.json();

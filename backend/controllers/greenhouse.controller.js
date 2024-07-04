@@ -47,6 +47,33 @@ const oneGreenhouseById = async (req, res) => {
     }
 }
 
+const oneGreenhouseByName = async (req, res) => {
+    const { greenhouseName } = req.params;
+    console.log('Greenhouse name called is:', greenhouseName);
+    try {
+        const decodedName = decodeURIComponent(greenhouseName).trim();
+        console.log('Decoded and trimmed name:', decodedName);
+
+        // Log all greenhouse names in the database
+        const allGreenhouses = await Greenhouse.find({}, 'greenhouseName');
+        console.log('All greenhouse names in DB:', allGreenhouses.map(g => g.greenhouseName));
+
+        // Use a more lenient query
+        const greenhouse = await Greenhouse.findOne({ 
+            greenhouseName: { $regex: decodedName, $options: 'i' }
+        });
+        console.log('Database query result:', greenhouse);
+
+        if (!greenhouse) {
+            return res.status(404).json({ message: "Greenhouse not found" });
+        }
+        res.status(200).json(greenhouse);
+    } catch (err) {
+        console.error('Error in oneGreenhouseByName:', err);
+        res.status(500).json({ message: err.message });
+    }
+}
+
 const addSensorDataByGreenhouseName = async (req, res) => {
     const { greenhouseName } = req.params;
     const { date, time, temperature, humidity, light, soilMoisture, soilTemp, note } = req.body;
@@ -110,4 +137,4 @@ const addEngineerActions = async (req, res) => {
 
 
 
-module.exports = { addGreenhouse, getGreenhouses, oneGreenhouseById, addSensorDataByGreenhouseName, addEngineerActions };
+module.exports = { addGreenhouse, getGreenhouses, oneGreenhouseById, addSensorDataByGreenhouseName, addEngineerActions, oneGreenhouseByName };

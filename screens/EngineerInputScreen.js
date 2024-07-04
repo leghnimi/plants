@@ -24,23 +24,31 @@ export default function EngineerInputScreen() {
   const [details, setDetails] = useState("");
   const [loading, setLoading] = useState(false);
   const { logout } = useContext(AppContext);
+  
 
-  console.log(selectedGreenhouse);
 
   useEffect(() => {
+    let isMounted = true;
+  
     const fetchGreenhouses = async () => {
       try {
         const response = await fetch(
           `${process.env.REACT_APP_API_ENDPOINT}/api/greenhouses`
         );
         const data = await response.json();
-        setGreenhouses(data);
+        if (isMounted) {
+          setGreenhouses(data);
+        }
       } catch (err) {
         console.error(err);
       }
     };
-
+  
     fetchGreenhouses();
+  
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const onDateChange = (event, selectedDate) => {
@@ -93,7 +101,7 @@ export default function EngineerInputScreen() {
       />
       <Text style={styles.title}>Actions de l'ingénieur</Text>
 
-      <ScrollView>
+      <ScrollView style={{width:"100%"}}>
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Sélectionner une serre</Text>
           <View style={styles.pickerContainer}>
@@ -143,16 +151,16 @@ export default function EngineerInputScreen() {
             style={styles.picker}
           >
             <Picker.Item label="Sélectionner une action" value="" />
-            <Picker.Item label="Fertilisation" value="fertilization" />
-            <Picker.Item label="Irrigation" value="irrigation" />
-            <Picker.Item label="Contrôle de température" value="temperature_control" />
-            <Picker.Item label="Contrôle des parasites" value="pest_control" />
-            <Picker.Item label="Taille" value="pruning" />
-            <Picker.Item label="Pollinisation" value="pollination" />
-            <Picker.Item label="Ajustement de l'éclairage" value="light_adjustment" />
-            <Picker.Item label="Récolte" value="harvesting" />
-            <Picker.Item label="Évaluation de la santé des plantes" value="plant_health_assessment" />
-            <Picker.Item label="Maintenance de l'équipement" value="equipment_maintenance" />
+            <Picker.Item label="Fertilisation" value="Fertilisation" />
+            <Picker.Item label="Irrigation" value="Irrigation" />
+            <Picker.Item label="Contrôle de température" value="controle de temperature" />
+            <Picker.Item label="Contrôle des parasites" value="controle de parasites" />
+            <Picker.Item label="Taille" value="Taille" />
+            <Picker.Item label="Pollinisation" value="Pollinisation" />
+            <Picker.Item label="Ajustement de l'éclairage" value="Ajustement de leclairage" />
+            <Picker.Item label="Récolte" value="Recolte" />
+            <Picker.Item label="Évaluation de la santé des plantes" value="Evaluation de la sante des plantes" />
+            <Picker.Item label="Maintenance de l'équipement" value="Maintenance de lequipement" />
           </Picker>
         </View>
 
@@ -219,13 +227,12 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   inputContainer: {
-    width: "90%",
+    width: "100%",
     marginTop: 10,
     padding: 10,
     backgroundColor: "rgba(255, 255, 255, 0.8)",
     borderRadius: 10,
     marginBottom: 10,
-    alignSelf: "center",
   },
   label: {
     fontSize: 16,
@@ -242,7 +249,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   dateContainer: {
-    width: "90%",
+    width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -295,7 +302,7 @@ const styles = StyleSheet.create({
   logoutContainer: {
     width: "90%",
     alignItems: "center",
-    marginBottom: 20,
+    marginTop: 20,
     alignSelf: "center",
   },
   logoutButton: {
