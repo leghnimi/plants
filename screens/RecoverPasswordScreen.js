@@ -37,7 +37,7 @@ function RecoverPasswordScreen() {
     } else {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/forgot-password`,
+          `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/forgot-password`,
           {
             method: "POST",
             headers: {

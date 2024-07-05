@@ -14,7 +14,7 @@ import { Picker } from "@react-native-picker/picker";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Slider from "@react-native-community/slider";
-import { AppContext } from "../App";
+import { AppContext } from "../AppContext";
 
 export default function WorkerInputScreen() {
   const [greenhouses, setGreenhouses] = useState([]);
@@ -42,7 +42,7 @@ export default function WorkerInputScreen() {
     const fetchGreenhouses = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/greenhouses`
+          `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/greenhouses`
         );
         const data = await response.json();
         setGreenhouses(data);
@@ -74,7 +74,7 @@ export default function WorkerInputScreen() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/greenhouse/${selectedGreenhouse}/sensor-data`,
+        `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/greenhouse/${selectedGreenhouse}/sensor-data`,
         {
           method: "POST",
           headers: {

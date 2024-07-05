@@ -44,7 +44,7 @@ export default function GreenhouseDetails({ route }) {
     const fetchGreenhouseDetails = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/greenhouse/${id}`
+          `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/greenhouse/${id}`
         );
         const data = await response.json();
         console.log(data)
@@ -85,7 +85,7 @@ export default function GreenhouseDetails({ route }) {
     const fetchPlants = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/plants/${greenhouseDetails?.plantType}`
+          `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/plants/${greenhouseDetails?.plantType}`
         );
         const data = await response.json();
         setPlants(data);

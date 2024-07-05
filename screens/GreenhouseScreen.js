@@ -13,12 +13,14 @@ export default function GreenhouseScreen() {
   const [greenhouses, setGreenhouses] = useState([]);
   const navigation = useNavigation();
 
+  console.log('greenhouses:', process.env.EXPO_PUBLIC_API_ENDPOINT);
+
   useEffect(() => {
     let isMounted = true;
     const fetchGreenhouses = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/greenhouses`
+          `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/greenhouses`
         );
         const data = await response.json();
         setGreenhouses(data);

@@ -96,7 +96,7 @@ export default function PlantsScreen() {
     let isMounted = true;
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/plants`
+        `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/plants`
       );
       const data = await response.json();
       setPlants(data);
@@ -151,7 +151,7 @@ export default function PlantsScreen() {
       formData.append("description", description);
 
       const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/upload`,
+        `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/upload`,
         {
           method: "POST",
           body: formData,
@@ -187,7 +187,7 @@ export default function PlantsScreen() {
     setIsLoadingGreenhouse(true);
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/add-greenhouse`,
+        `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/add-greenhouse`,
         {
           method: "POST",
           headers: {

@@ -11,10 +11,10 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AppContext } from "../App";
 import ModalComponent from "../components/ModalUniversal";
 import { ScrollView } from "react-native-gesture-handler";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { AppContext } from "../AppContext";
 
 
 export default function SignupScreen() {
@@ -30,10 +30,14 @@ export default function SignupScreen() {
   const [isAddUserModalVisible, setIsAddUserModalVisible] = useState(false);
   const [isDeleteUserModalVisible, setIsDeleteUserModalVisible] = useState(false);
   const [isExportDataModalVisible, setIsExportDataModalVisible] = useState(false);
-  const { logout, greenhouses } = useContext(AppContext);
+  const [isDeleteGreenhouseModalVisible, setIsDeleteGreenhouseModalVisible] = useState(false);
+  const { logout, greenhouses, setGreenhouses } = useContext(AppContext);
   const [allUsers, setAllUsers] = useState([]);
   const [selectedGreenhouse, setSelectedGreenhouse] = useState(null);
   const [selectedGreenhouseDetails, setSelectedGreenhouseDetails] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+
 
 
   function formatDate(dateString) {
@@ -54,14 +58,14 @@ export default function SignupScreen() {
       }
     };
     getUser();
-  }, []);
+  }, [refreshTrigger]);
 
   useEffect(() => {
     let isMounted = true;
     const fetchUsers = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/get-users`
+          `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/get-users`
         );
         const data = await response.json();
         setAllUsers(data);
@@ -76,7 +80,7 @@ export default function SignupScreen() {
       isMounted = false;
     };
 
-  }, []);
+  }, [refreshTrigger]);
 
 
   const handleValidation = async () => {
@@ -91,7 +95,7 @@ export default function SignupScreen() {
     } else {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/signup`,
+          `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/signup`,
           {
             method: "POST",
             headers: {
@@ -113,6 +117,7 @@ export default function SignupScreen() {
           setConfirmPassword("");
           setSelectedRole("");
           setUserName("");
+          setRefreshTrigger(prev => prev + 1); 
         } else {
           const errorData = await response.json();
           alert(`Erreur: ${JSON.stringify(errorData.message)}`);
@@ -142,11 +147,14 @@ export default function SignupScreen() {
   const closeExportDataModal = () => {
     setIsExportDataModalVisible(false);
   }
+  const handleDeleteGreenhouseModal = () => {
+    setIsDeleteGreenhouseModalVisible(!isDeleteGreenhouseModalVisible);
+  }
 
   const deleteUser = (userName) => async () => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/delete-user?identifier=${userName}`,
+        `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/delete-user?identifier=${userName}`,
         {
           method: "DELETE",
           headers: {
@@ -160,6 +168,7 @@ export default function SignupScreen() {
 
       if (response.ok) {
         alert("Utilisateur supprimé avec succès");
+        setRefreshTrigger(prev => prev + 1); 
       } else {
         const errorData = await response.json();
         alert(`Erreur: ${JSON.stringify(errorData.message)}`);
@@ -169,11 +178,40 @@ export default function SignupScreen() {
       alert("Une erreur est survenue");
     }
   }
+const deleteGreenhouseById = (id) => async () => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/greenhouse/delete/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        alert("Serre supprimée avec succès");
+        setRefreshTrigger(prev => prev + 1); 
+        const updatedGreenhouses = greenhouses.filter(greenhouse => greenhouse._id !== id);
+      setGreenhouses(updatedGreenhouses);
+      } else {
+        const errorData = await response.json();
+        alert(`Erreur: ${JSON.stringify(errorData.message)}`);
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Une erreur est survenue");
+    }
+}
 
   const fetchGreenhouseDetails = async (greenhouseName) => {
     try {
       const encodedName = encodeURIComponent(greenhouseName.trim());
-      const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/greenhouse/name/${encodedName}`);
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/greenhouse/name/${encodedName}`);
       if (response.ok) {
         const data = await response.json();
         setSelectedGreenhouseDetails(data);
@@ -195,6 +233,8 @@ export default function SignupScreen() {
       setSelectedGreenhouseDetails(null);
     }
   };
+
+
 
 
 
@@ -230,6 +270,21 @@ export default function SignupScreen() {
           >
             <Text style={{ color: "white", fontWeight: "bold" }}>
               Supprimer utilisateurs
+            </Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.loginContainer}>
+          <Pressable
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              height: 25,
+            }}
+            onPress={handleDeleteGreenhouseModal}
+          >
+            <Text style={{ color: "white", fontWeight: "bold" }}>
+              Supprimer Serre
             </Text>
           </Pressable>
         </View>
@@ -506,6 +561,38 @@ export default function SignupScreen() {
 
         </ModalComponent>
 
+
+        <ModalComponent
+          isVisible={isDeleteGreenhouseModalVisible}
+          height={"80%"}
+        >
+          <Pressable
+            style={styles.closeButton}
+            onPress={handleDeleteGreenhouseModal}
+          >
+            <Text style={styles.closeButtonText}>X</Text>
+          </Pressable>
+
+          <View style={{ flex: 1, marginTop: 30 }}>
+            {greenhouses.map((greenhouse, index) => (
+              <View key={index} style={{ marginBottom: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 20 }}>
+                <Text>Nom Serre : {greenhouse.greenhouseName}</Text>
+                <View style={{ backgroundColor: "red", padding: 10, borderRadius: 24 }}>
+                  <TouchableOpacity
+                    onPress={deleteGreenhouseById(greenhouse._id)}
+                  >
+
+                    <Text style={{ color: "white" }}>
+                      Supprimer
+                    </Text>
+
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
+
+        </ModalComponent>
 
 
         <View style={styles.logoutContainer}>

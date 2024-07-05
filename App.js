@@ -3,10 +3,10 @@ import { HomeStackScreen, TabScreen } from "./components/AppNavigator";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AppContext } from "./AppContext";
 
 const MainStack = createStackNavigator();
 
-export const AppContext = createContext();
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -27,7 +27,7 @@ export default function App() {
     const fetchGreenhouses = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_API_ENDPOINT}/api/greenhouses`
+          `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/greenhouses`
         );
         const data = await response.json();
         setGreenhouses(data);
@@ -59,7 +59,8 @@ export default function App() {
     isAuthenticated,
     login,
     logout,
-    greenhouses
+    greenhouses,
+    setGreenhouses
   };
 
   return (

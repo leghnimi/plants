@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { AppContext } from "../App";
+import { AppContext } from "../AppContext";
 
 export default function LoginScreen() {
   const appContext = useContext(AppContext);
@@ -21,7 +21,6 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
 
-console.log(password)
 
   useFocusEffect(
     useCallback(() => {
@@ -35,7 +34,7 @@ console.log(password)
   const handleLogin = async () => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_ENDPOINT}/api/login`,
+        `${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/login`,
         {
           method: "POST",
           headers: {

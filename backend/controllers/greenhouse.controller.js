@@ -134,7 +134,24 @@ const addEngineerActions = async (req, res) => {
     }
 }
 
+const deleteGreenhouseById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const greenhouse = await Greenhouse.findByIdAndDelete(id);
+
+        if (!greenhouse) {
+            return res.status(404).json({ message: 'Greenhouse not found' });
+        }
+
+        res.status(200).json({ message: 'Greenhouse deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+
+}
 
 
 
-module.exports = { addGreenhouse, getGreenhouses, oneGreenhouseById, addSensorDataByGreenhouseName, addEngineerActions, oneGreenhouseByName };
+
+module.exports = { addGreenhouse, getGreenhouses, oneGreenhouseById, addSensorDataByGreenhouseName, addEngineerActions, oneGreenhouseByName, deleteGreenhouseById };
